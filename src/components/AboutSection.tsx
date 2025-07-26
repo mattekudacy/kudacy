@@ -5,8 +5,8 @@ import { ReactTyped } from 'react-typed';
 import { motion } from 'framer-motion';
 import { 
   SiPython, SiDjango, SiFastapi, SiDocker, SiAmazonwebservices, 
-  SiGooglecloud, SiPostgresql, SiRedis, SiKubernetes,
-  SiHtml5, SiCss3, SiJavascript, SiTypescript, SiStreamlit, 
+  SiGooglecloud, SiPostgresql , SiKubernetes,
+  SiHtml5, SiJavascript, SiTypescript, 
   SiNextdotjs, SiReact, SiTailwindcss,
   SiPytorch, SiTensorflow, SiScikitlearn, SiPandas, SiNumpy, 
   SiJupyter, SiNvidia
@@ -137,7 +137,7 @@ const AboutSection = () => {
                 variants={itemVariants}
                 transition={{ duration: 0.6, ease: "easeOut" }}
               >
-                I'm a passionate Machine Learning Engineer with over 4 years of experience building 
+                I&apos;m a passionate Machine Learning Engineer with over 4 years of experience building 
                 intelligent systems and scalable backend solutions. I specialize in creating AI-powered 
                 applications and robust data pipelines that drive business value.
               </motion.p>
@@ -146,7 +146,7 @@ const AboutSection = () => {
                 variants={itemVariants}
                 transition={{ duration: 0.6, ease: "easeOut" }}
               >
-                Outside of work, you'll find me exploring new frameworks,
+                Outside of work, you&apos;ll find me exploring new frameworks,
                 and giving out talks on the latest advancements in AI. This way, I stay at the forefront of technology.
               </motion.p>
             </motion.div>

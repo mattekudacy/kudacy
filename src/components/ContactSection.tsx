@@ -3,13 +3,10 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { 
-  FaEnvelope, 
-  FaPhone, 
+  FaEnvelope,  
   FaMapMarkerAlt, 
   FaLinkedin, 
   FaGithub, 
-  FaTwitter,
-  FaDiscord
 } from 'react-icons/fa';
 
 const ContactSection = () => {
