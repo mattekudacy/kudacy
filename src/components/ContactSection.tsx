@@ -117,7 +117,7 @@ const ContactSection = () => {
             transition={{ duration: 0.6, delay: 0.4 }}
             viewport={{ once: true }}
           >
-            Ready to bring your ideas to life? Let's discuss your project and 
+            Ready to bring your ideas to life? Let&apos;s discuss your project and 
             how I can help you achieve your goals.
           </motion.p>
         </motion.div>
