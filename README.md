@@ -1,22 +1,106 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Carl Hanson - Portfolio Website
 
-## Getting Started
+A modern, responsive portfolio website built with Next.js, TypeScript, and Tailwind CSS. Features a dark theme with cyan accents and a horizontal navigation layout.
 
-First, run the development server:
+## 🚀 Features
 
+- **Modern Design**: Dark theme with professional typography and clean layouts
+- **Responsive**: Fully responsive design that works on all devices
+- **Fast Performance**: Built with Next.js 15 for optimal performance
+- **TypeScript**: Full type safety and better development experience
+- **Tailwind CSS**: Utility-first CSS framework for rapid styling
+- **Horizontal Navigation**: Clean navbar instead of sidebar navigation
+- **Smooth Scrolling**: Seamless navigation between sections
+
+## 📋 Sections
+
+- **Hero Section**: Professional introduction with statistics and call-to-action
+- **About**: Personal background, skills, and services offered
+- **Projects**: Showcase of featured projects with tech stacks
+- **Contact**: Contact form and social media links
+- **Footer**: Simple footer with legal links
+
+## 🛠️ Tech Stack
+
+- **Framework**: Next.js 15 with App Router
+- **Language**: TypeScript
+- **Styling**: Tailwind CSS
+- **Fonts**: Geist Sans & Geist Mono
+- **Development**: ESLint for code quality
+
+## 🏃‍♂️ Getting Started
+
+1. Clone the repository:
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+git clone <repository-url>
+cd my-portfolio
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+2. Install dependencies:
+```bash
+npm install
+```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+3. Run the development server:
+```bash
+npm run dev
+```
+
+4. Open [http://localhost:3000](http://localhost:3000) to view the website.
+
+## 📁 Project Structure
+
+```
+src/
+├── app/
+│   ├── globals.css      # Global styles
+│   ├── layout.tsx       # Root layout
+│   └── page.tsx         # Home page
+└── components/
+    ├── Navbar.tsx       # Navigation component
+    ├── HeroSection.tsx  # Hero/intro section
+    ├── AboutSection.tsx # About me section
+    ├── ProjectsSection.tsx # Projects showcase
+    ├── ContactSection.tsx  # Contact form
+    └── Footer.tsx       # Footer component
+```
+
+## 🎨 Customization
+
+### Colors
+The portfolio uses a consistent color scheme:
+- Primary: `#06b6d4` (cyan-500)
+- Background: `#111827` (gray-900)
+- Secondary Background: `#1f2937` (gray-800)
+- Text: `#ffffff` (white) and `#9ca3af` (gray-400)
+
+### Content
+To customize the content:
+1. Update personal information in `HeroSection.tsx`
+2. Modify projects in `ProjectsSection.tsx`
+3. Update skills and services in `AboutSection.tsx`
+4. Change contact information in `ContactSection.tsx`
+
+## 📱 Responsive Design
+
+The portfolio is fully responsive with breakpoints:
+- Mobile: Default (< 768px)
+- Tablet: `md:` (≥ 768px)
+- Desktop: `lg:` (≥ 1024px)
+
+## 🚀 Deployment
+
+The portfolio can be deployed on:
+- [Vercel](https://vercel.com) (recommended)
+- [Netlify](https://netlify.com)
+- [AWS](https://aws.amazon.com)
+- Any static hosting service
+
+For Vercel deployment:
+```bash
+npm run build
+vercel --prod
+```
 
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
