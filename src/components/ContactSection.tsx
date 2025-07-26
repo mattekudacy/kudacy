@@ -308,9 +308,9 @@ const ContactSection = () => {
                   transition={{ delay: 0.5, duration: 0.6 }}
                   viewport={{ once: true }}
                 >
-                  I'm always excited to work on new and challenging projects. 
+                  I&apos;m always excited to work on new and challenging projects. 
                   Whether you need help with machine learning solutions, backend development, 
-                  or full-stack applications, let's bring your ideas to life!
+                  or full-stack applications, let&apos;s bring your ideas to life!
                 </motion.p>
                 <motion.div 
                   className="flex flex-col sm:flex-row gap-4"
