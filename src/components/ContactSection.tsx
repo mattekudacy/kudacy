@@ -98,7 +98,7 @@ const ContactSection = () => {
             transition={{ duration: 0.6, delay: 0.2 }}
             viewport={{ once: true }}
           >
-            Let's <span className="text-cyan-400 relative">
+            Let&apos;s <span className="text-cyan-400 relative">
               Connect
               <motion.span
                 className="absolute -bottom-2 left-0 w-full h-1 bg-gradient-to-r from-cyan-400 to-blue-500 rounded-full"
