@@ -1,24 +1,4 @@
-# Carl Hanson - Portfolio Website
-
-A modern, responsive portfolio website built with Next.js, TypeScript, and Tailwind CSS. Features a dark theme with cyan accents and a horizontal navigation layout.
-
-## 🚀 Features
-
-- **Modern Design**: Dark theme with professional typography and clean layouts
-- **Responsive**: Fully responsive design that works on all devices
-- **Fast Performance**: Built with Next.js 15 for optimal performance
-- **TypeScript**: Full type safety and better development experience
-- **Tailwind CSS**: Utility-first CSS framework for rapid styling
-- **Horizontal Navigation**: Clean navbar instead of sidebar navigation
-- **Smooth Scrolling**: Seamless navigation between sections
-
-## 📋 Sections
-
-- **Hero Section**: Professional introduction with statistics and call-to-action
-- **About**: Personal background, skills, and services offered
-- **Projects**: Showcase of featured projects with tech stacks
-- **Contact**: Contact form and social media links
-- **Footer**: Simple footer with legal links
+# Cyrus Mante - Portfolio Website
 
 ## 🛠️ Tech Stack
 
@@ -86,21 +66,7 @@ To customize the content:
 The portfolio is fully responsive with breakpoints:
 - Mobile: Default (< 768px)
 - Tablet: `md:` (≥ 768px)
-- Desktop: `lg:` (≥ 1024px)
-
-## 🚀 Deployment
-
-The portfolio can be deployed on:
-- [Vercel](https://vercel.com) (recommended)
-- [Netlify](https://netlify.com)
-- [AWS](https://aws.amazon.com)
-- Any static hosting service
-
-For Vercel deployment:
-```bash
-npm run build
-vercel --prod
-```
+- Desktop: `lg:` (≥ 1024px
 
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
