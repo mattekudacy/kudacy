@@ -320,7 +320,7 @@ const ContactSection = () => {
                   viewport={{ once: true }}
                 >
                   <motion.a
-                    href="mailto:cyrus.mante@example.com"
+                    href="mailto:cyrus2952@gmail.com"
                     className="bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white px-6 py-3 rounded-lg font-medium transition-all duration-300 text-center"
                     whileHover={{ 
                       scale: 1.05,
