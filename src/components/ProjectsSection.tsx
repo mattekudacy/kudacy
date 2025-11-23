@@ -166,34 +166,20 @@ const ProjectsSection = () => {
                   viewport={{ once: true }}
                 >
                   <motion.div 
-                    className="relative bg-gray-800 rounded-lg overflow-hidden border border-gray-700 group-hover:border-cyan-400 transition-all duration-500"
+                    className="relative bg-gray-800 rounded-lg overflow-hidden border border-gray-700 hover:border-cyan-500/50 transition-all duration-300"
                     whileHover={{ 
-                      y: -10,
-                      boxShadow: "0 25px 50px rgba(6, 182, 212, 0.3)",
-                      scale: 1.05
+                      y: -5,
+                      boxShadow: "0 10px 30px -10px rgba(0, 0, 0, 0.5)",
                     }}
                     transition={{ duration: 0.3 }}
                   >
-                    {/* Animated border glow */}
-                    <motion.div
-                      className="absolute -inset-1 bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-500 rounded-lg opacity-0 group-hover:opacity-75 blur transition-opacity duration-500"
-                      animate={{
-                        background: [
-                          "linear-gradient(0deg, #06b6d4, #3b82f6, #8b5cf6)",
-                          "linear-gradient(120deg, #06b6d4, #3b82f6, #8b5cf6)",
-                          "linear-gradient(240deg, #06b6d4, #3b82f6, #8b5cf6)",
-                          "linear-gradient(360deg, #06b6d4, #3b82f6, #8b5cf6)"
-                        ]
-                      }}
-                      transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
-                    />
                     
                     <div className="relative bg-gray-800 rounded-lg overflow-hidden">
                       <motion.img 
                         src={project.image}
                         alt={project.title}
                         className="w-full h-64 object-cover"
-                        whileHover={{ scale: 1.1 }}
+                        whileHover={{ scale: 1.05 }}
                         transition={{ duration: 0.5 }}
                         onError={(e) => {
                           const target = e.target as HTMLImageElement;
