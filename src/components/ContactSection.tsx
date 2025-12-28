@@ -1,12 +1,8 @@
 'use client';
 
 import React from 'react';
-import { 
-  FaEnvelope,  
-  FaMapMarkerAlt, 
-  FaLinkedin, 
-  FaGithub, 
-} from 'react-icons/fa';
+import { motion } from 'framer-motion';
+import { FaEnvelope, FaMapMarkerAlt, FaLinkedin, FaGithub } from 'react-icons/fa';
 
 const ContactSection = () => {
   const contactInfo = [
@@ -25,123 +21,112 @@ const ContactSection = () => {
   ];
 
   const socialLinks = [
-    {
-      icon: FaLinkedin,
-      label: 'LinkedIn',
-      url: 'https://linkedin.com/in/cyrusmante'
-    },
-    {
-      icon: FaGithub,
-      label: 'GitHub',
-      url: 'https://github.com/mattekudacy'
-    },
+    { icon: FaLinkedin, url: 'https://linkedin.com/in/cyrusmante', label: 'LinkedIn' },
+    { icon: FaGithub, url: 'https://github.com/mattekudacy', label: 'GitHub' },
   ];
 
   return (
-    <section id="contact" className="py-20 bg-gray-800">
-      <div className="max-w-6xl mx-auto px-6 lg:px-8">
-        {/* Header */}
-        <div className="mb-16">
-          <h2 className="text-4xl font-bold text-white mb-4">
-            Get In <span className="text-cyan-400">Touch</span>
+    <section id="contact" className="py-32 bg-gray-900 relative overflow-hidden">
+      {/* Background */}
+      <div className="absolute inset-0">
+        <div className="absolute bottom-0 left-0 w-full h-1/2 bg-[radial-gradient(ellipse_at_bottom_left,_var(--tw-gradient-stops))] from-cyan-900/20 via-transparent to-transparent"></div>
+      </div>
+
+      <div className="max-w-3xl mx-auto px-6 lg:px-8 relative z-10">
+        {/* Section Header */}
+        <motion.div 
+          className="text-center mb-16"
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
+        >
+          <span className="text-cyan-400 text-sm font-semibold tracking-widest uppercase mb-4 block">
+            Contact
+          </span>
+          <h2 className="text-4xl lg:text-5xl font-bold text-white mb-6">
+            Let&apos;s Work <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500">Together</span>
           </h2>
-          <div className="w-20 h-1 bg-cyan-400"></div>
-        </div>
+          <p className="text-gray-400 text-lg max-w-2xl mx-auto">
+            Have a project in mind? I&apos;d love to hear about it. 
+            Reach out through any of the channels below.
+          </p>
+        </motion.div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-          {/* Contact Information */}
-          <div className="space-y-6">
-            <h3 className="text-2xl font-bold text-white mb-6">Contact Information</h3>
-            
-            <div className="space-y-4">
-              {contactInfo.map((item, index) => (
-                <div key={index} className="flex items-center gap-4">
-                  <div className="w-12 h-12 bg-gray-900 border border-gray-700 flex items-center justify-center">
-                    <item.icon className="text-cyan-400 text-lg" />
-                  </div>
-                  <div>
-                    <div className="text-gray-400 text-sm">{item.label}</div>
-                    {item.link ? (
-                      <a href={item.link} className="text-white hover:text-cyan-400">
-                        {item.value}
-                      </a>
-                    ) : (
-                      <div className="text-white">{item.value}</div>
-                    )}
-                  </div>
+        {/* Contact Info Cards */}
+        <motion.div 
+          className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12"
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6, delay: 0.1 }}
+        >
+          {contactInfo.map((item, index) => (
+            <div 
+              key={index} 
+              className="p-6 rounded-2xl bg-gray-800/30 border border-gray-700/50 hover:border-cyan-500/30 transition-all duration-300 group"
+            >
+              <div className="flex items-center gap-4">
+                <div className="w-14 h-14 rounded-2xl bg-gray-800/50 border border-gray-700/50 flex items-center justify-center group-hover:border-cyan-500/30 group-hover:bg-cyan-500/5 transition-all duration-300">
+                  <item.icon className="text-xl text-cyan-400" />
                 </div>
-              ))}
-            </div>
-
-            {/* Social Links */}
-            <div className="pt-8">
-              <h4 className="text-lg font-semibold text-white mb-4">Follow Me</h4>
-              <div className="flex gap-4">
-                {socialLinks.map((social, index) => (
-                  <a
-                    key={index}
-                    href={social.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="w-12 h-12 bg-gray-900 border border-gray-700 flex items-center justify-center hover:border-cyan-400 hover:bg-gray-800 transition-colors"
-                    aria-label={social.label}
-                  >
-                    <social.icon className="text-cyan-400 text-lg" />
-                  </a>
-                ))}
+                <div>
+                  <div className="text-sm text-gray-500 mb-1">{item.label}</div>
+                  {item.link ? (
+                    <a href={item.link} className="text-white hover:text-cyan-400 transition-colors font-medium">
+                      {item.value}
+                    </a>
+                  ) : (
+                    <div className="text-white font-medium">{item.value}</div>
+                  )}
+                </div>
               </div>
             </div>
-          </div>
+          ))}
+        </motion.div>
 
-          {/* Message Form */}
-          <div>
-            <h3 className="text-2xl font-bold text-white mb-6">Send a Message</h3>
-            <form className="space-y-4">
-              <div>
-                <label htmlFor="name" className="block text-gray-400 text-sm mb-2">
-                  Name
-                </label>
-                <input
-                  type="text"
-                  id="name"
-                  className="w-full bg-gray-900 border border-gray-700 text-white px-4 py-3 focus:outline-none focus:border-cyan-400"
-                  placeholder="Your name"
-                />
-              </div>
-
-              <div>
-                <label htmlFor="email" className="block text-gray-400 text-sm mb-2">
-                  Email
-                </label>
-                <input
-                  type="email"
-                  id="email"
-                  className="w-full bg-gray-900 border border-gray-700 text-white px-4 py-3 focus:outline-none focus:border-cyan-400"
-                  placeholder="your.email@example.com"
-                />
-              </div>
-
-              <div>
-                <label htmlFor="message" className="block text-gray-400 text-sm mb-2">
-                  Message
-                </label>
-                <textarea
-                  id="message"
-                  rows={5}
-                  className="w-full bg-gray-900 border border-gray-700 text-white px-4 py-3 focus:outline-none focus:border-cyan-400 resize-none"
-                  placeholder="Your message"
-                />
-              </div>
-
-              <button
-                type="submit"
-                className="bg-cyan-400 text-gray-900 px-6 py-3 font-semibold hover:bg-cyan-300 transition-colors w-full"
+        {/* Social Links */}
+        <motion.div 
+          className="text-center"
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6, delay: 0.2 }}
+        >
+          <h4 className="text-white font-semibold mb-6">Connect with me</h4>
+          <div className="flex justify-center gap-4">
+            {socialLinks.map((social, index) => (
+              <a
+                key={index}
+                href={social.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-14 h-14 rounded-2xl bg-gray-800/50 border border-gray-700/50 flex items-center justify-center text-gray-400 hover:text-white hover:border-cyan-500/30 hover:bg-cyan-500/10 transition-all duration-300"
+                aria-label={social.label}
               >
-                Send Message
-              </button>
-            </form>
+                <social.icon className="text-xl" />
+              </a>
+            ))}
           </div>
-        </div>
+        </motion.div>
+
+        {/* Availability Card */}
+        <motion.div 
+          className="mt-12 p-6 rounded-2xl bg-gradient-to-br from-cyan-500/10 to-blue-500/10 border border-cyan-500/20 text-center"
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6, delay: 0.3 }}
+        >
+          <div className="flex items-center justify-center gap-3 mb-2">
+            <span className="w-3 h-3 bg-green-400 rounded-full animate-pulse"></span>
+            <span className="text-white font-semibold">Currently Available</span>
+          </div>
+          <p className="text-gray-400 text-sm">
+            I&apos;m open to freelance projects and full-time opportunities. 
+            Let&apos;s discuss how I can help with your next project.
+          </p>
+        </motion.div>
       </div>
     </section>
   );

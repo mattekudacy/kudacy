@@ -1,120 +1,204 @@
 'use client';
 
-import React, { useState } from 'react';
-import { ReactTyped } from 'react-typed';
+import React from 'react';
+import { motion } from 'framer-motion';
+import { FaGithub, FaLinkedin } from 'react-icons/fa';
 
 const HeroSection = () => {
-  const [nameTyped, setNameTyped] = useState(false);
-  
   return (
-    <section id="home" className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-900 to-gray-800 text-white flex items-center relative overflow-hidden pt-16">
-      {/* Background decoration */}
-      <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-cyan-500/5 rounded-full blur-3xl animate-pulse"></div>
-        <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-blue-500/5 rounded-full blur-3xl animate-pulse"></div>
+    <section id="home" className="min-h-screen bg-gray-900 text-white flex items-center relative overflow-hidden">
+      {/* Animated Background */}
+      <div className="absolute inset-0">
+        <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(ellipse_at_top_left,_var(--tw-gradient-stops))] from-cyan-900/20 via-transparent to-transparent"></div>
+        <div className="absolute bottom-0 right-0 w-full h-full bg-[radial-gradient(ellipse_at_bottom_right,_var(--tw-gradient-stops))] from-blue-900/20 via-transparent to-transparent"></div>
+        
+        {/* Grid Pattern */}
+        <div className="absolute inset-0 bg-[linear-gradient(rgba(6,182,212,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(6,182,212,0.03)_1px,transparent_1px)] bg-[size:60px_60px]"></div>
+        
+        {/* Floating Orbs */}
+        <motion.div 
+          className="absolute top-1/4 left-1/4 w-72 h-72 bg-cyan-500/10 rounded-full blur-3xl"
+          animate={{ 
+            scale: [1, 1.2, 1],
+            opacity: [0.3, 0.5, 0.3]
+          }}
+          transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
+        />
+        <motion.div 
+          className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl"
+          animate={{ 
+            scale: [1.2, 1, 1.2],
+            opacity: [0.3, 0.5, 0.3]
+          }}
+          transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
+        />
       </div>
-      
-      <div className="max-w-7xl mx-auto px-6 lg:px-8 relative z-10 w-full">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-          {/* Left content */}
-          <div className="space-y-8 order-2 lg:order-1">
-            <div className="space-y-6">
-              <h1 className="text-5xl lg:text-6xl font-bold leading-tight">
-                <span className="text-gray-300">&gt; </span>
-                <ReactTyped
-                  strings={['Cyrus Mante']}
-                  typeSpeed={100} 
-                  showCursor={true}
-                  cursorChar="_"
-                  className="text-white"
-                  onComplete={() => setNameTyped(true)}
+
+      <div className="max-w-7xl mx-auto px-6 lg:px-8 relative z-10 w-full pt-20">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center">
+          {/* Left Content */}
+          <motion.div 
+            className="space-y-8"
+            initial={{ opacity: 0, x: -50 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.8 }}
+          >
+            {/* Badge */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
+            >
+              <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 text-sm font-medium">
+                <span className="w-2 h-2 bg-cyan-400 rounded-full animate-pulse"></span>
+                Available for work
+              </span>
+            </motion.div>
+
+            {/* Main Heading */}
+            <div className="space-y-4">
+              <motion.h1 
+                className="text-5xl lg:text-7xl font-bold leading-tight"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.3 }}
+              >
+                <span className="text-white">Hi, I&apos;m </span>
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500">
+                  Cyrus
+                </span>
+              </motion.h1>
+              
+              <motion.h2 
+                className="text-2xl lg:text-3xl text-gray-400 font-light"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.4 }}
+              >
+                Machine Learning Engineer & Data Scientist
+              </motion.h2>
+            </div>
+
+            {/* Description */}
+            <motion.p 
+              className="text-gray-400 text-lg leading-relaxed max-w-xl"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.5 }}
+            >
+              I build intelligent systems that transform data into actionable insights. 
+              From predictive analytics to computer vision and NLP, I help businesses 
+              unlock the power of AI.
+            </motion.p>
+
+            {/* CTA Buttons */}
+            <motion.div 
+              className="flex flex-wrap gap-4 pt-4"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.6 }}
+            >
+              <a href="#projects">
+                <button className="group px-8 py-4 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-full font-semibold text-white hover:shadow-lg hover:shadow-cyan-500/25 transition-all duration-300 hover:-translate-y-1">
+                  View My Work
+                  <span className="inline-block ml-2 group-hover:translate-x-1 transition-transform">→</span>
+                </button>
+              </a>
+              <a href="#contact">
+                <button className="px-8 py-4 border border-gray-700 rounded-full font-semibold text-white hover:border-cyan-500/50 hover:bg-cyan-500/5 transition-all duration-300">
+                  Let&apos;s Talk
+                </button>
+              </a>
+            </motion.div>
+
+            {/* Social Links */}
+            <motion.div 
+              className="flex items-center gap-4 pt-4"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.7 }}
+            >
+              <a href="https://github.com/mattekudacy" target="_blank" className="w-12 h-12 flex items-center justify-center rounded-full bg-white/5 border border-white/10 text-gray-400 hover:text-white hover:bg-white/10 hover:border-cyan-500/50 transition-all duration-300">
+                <FaGithub className="text-xl" />
+              </a>
+              <a href="https://linkedin.com/in/cyrusmante" target="_blank" className="w-12 h-12 flex items-center justify-center rounded-full bg-white/5 border border-white/10 text-gray-400 hover:text-white hover:bg-white/10 hover:border-cyan-500/50 transition-all duration-300">
+                <FaLinkedin className="text-xl" />
+              </a>
+            </motion.div>
+          </motion.div>
+
+          {/* Right Content - Stats & Image */}
+          <motion.div 
+            className="relative"
+            initial={{ opacity: 0, x: 50 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.8, delay: 0.3 }}
+          >
+            {/* Profile Image */}
+            <div className="relative mx-auto w-80 h-80 lg:w-[420px] lg:h-[420px]">
+              {/* Decorative Ring */}
+              <div className="absolute inset-0 rounded-full bg-gradient-to-r from-cyan-500 to-blue-500 p-1 animate-spin-slow">
+                <div className="w-full h-full rounded-full bg-gray-900"></div>
+              </div>
+              
+              {/* Image Container */}
+              <div className="absolute inset-4 rounded-full overflow-hidden border-4 border-gray-800">
+                <img 
+                  src="/images/me.jpg" 
+                  alt="Cyrus Mante" 
+                  className="w-full h-full object-cover"
                 />
-              </h1>
-              
-              <div className={`transition-opacity duration-1000 ${nameTyped ? 'opacity-100' : 'opacity-0'}`}>
-                <h2 className="text-3xl lg:text-4xl font-bold leading-tight">
-                  <span className="text-cyan-400">Machine Learning Engineer</span> &{' '}
-                  <br />
-                  <span className="text-cyan-400">Data Scientist</span>
-                </h2>
-              </div>
-            </div>
-
-            <div className={`transition-opacity duration-1000 delay-500 ${nameTyped ? 'opacity-100' : 'opacity-0'}`}>
-              <p className="text-gray-400 text-lg max-w-xl leading-relaxed">
-                Building intelligent systems that transform data into actionable insights. 
-                I design and deploy machine learning models that solve real-world problems, 
-                from predictive analytics to computer vision and natural language processing, 
-                helping businesses unlock the power of artificial intelligence.
-              </p>
-            </div>
-
-            {/* Statistics */}
-            <div className={`transition-opacity duration-1000 delay-1000 ${nameTyped ? 'opacity-100' : 'opacity-0'}`}>
-              <div className="flex flex-wrap gap-12 pt-8 border-t border-gray-700">
-                <div className="hover:scale-110 transition-transform duration-300">
-                  <div className="text-4xl lg:text-5xl font-bold text-red-400 mb-2">4+</div>
-                  <div className="text-gray-400 text-sm uppercase tracking-wide">Years of<br />Experience</div>
-                </div>
-                <div className="hover:scale-110 transition-transform duration-300">
-                  <div className="text-4xl lg:text-5xl font-bold text-blue-400 mb-2">20+</div>
-                  <div className="text-gray-400 text-sm uppercase tracking-wide">Satisfied<br />Clients</div>
-                </div>
-                <div className="hover:scale-110 transition-transform duration-300">
-                  <div className="text-4xl lg:text-5xl font-bold text-cyan-400 mb-2">40+</div>
-                  <div className="text-gray-400 text-sm uppercase tracking-wide">Solutions<br />Deployed</div>
-                </div>
-              </div>
-            </div>
-
-            {/* CTA Button */}
-            <div className={`transition-opacity duration-1000 delay-1500 ${nameTyped ? 'opacity-100' : 'opacity-0'}`}>
-              <div className="pt-8">
-                <a href='https://docs.google.com/document/d/1DhbWY81LX608xCGZq3zYWxomhyi0VqsXO1zBR0d8UHQ/edit?usp=sharing' target='_blank'>
-                  <button className="group bg-white text-gray-900 px-8 py-4 font-semibold hover:bg-gray-200 transition-all duration-300 border-2 border-cyan-400 hover:border-cyan-300 shadow-lg hover:shadow-cyan-400/20 hover:scale-105 hover:-translate-y-1 relative overflow-hidden">
-                    <span className="relative z-10"> Download Resume</span>
-                    <div className="absolute inset-0 bg-gradient-to-r from-cyan-400 to-blue-500 opacity-0 group-hover:opacity-10 transition-opacity duration-300"></div>
-                  </button>
-                </a>
-              </div>
-            </div>
-          </div>
-
-          {/* Right content - Image */}
-          <div className="flex justify-center lg:justify-end order-1 lg:order-2">
-            <div className="relative group">
-              {/* Main image container */}
-              <div className="w-80 h-96 lg:w-96 lg:h-[500px] bg-gradient-to-br from-gray-800 via-gray-700 to-gray-900 rounded-2xl overflow-hidden border border-gray-700 shadow-2xl hover:shadow-cyan-400/10 transition-all duration-500 hover:scale-105 hover:-translate-y-2">
-                {/* Professional headshot placeholder with better styling */}
-                <div className="w-full h-full flex items-center justify-center relative">
-                  <div className="text-8xl text-cyan-400 group-hover:scale-110 transition-transform duration-500">
-                    <img src="/images/me.jpg" alt="Cyrus Mante" className="w-full h-full object-cover" />
-                  </div>
-                  {/* Overlay text */}
-                  <div className="absolute bottom-4 left-4 right-4">
-                    <div className="bg-black/50 backdrop-blur-sm rounded-lg p-3 group-hover:bg-black/70 transition-all duration-300">
-                      <p className="text-white text-sm font-medium">Cyrus Mante</p>
-                      <p className="text-gray-300 text-xs">And his C2 Green Bottle</p>
-                    </div>
-                  </div>
-                </div>
               </div>
               
-              {/* Enhanced decorative elements */}
-              <div className="absolute -top-6 -right-6 w-24 h-24 bg-gradient-to-br from-cyan-400 to-blue-500 rounded-full opacity-20 blur-xl animate-pulse group-hover:opacity-40 transition-opacity duration-500"></div>
-              <div className="absolute -bottom-6 -left-6 w-20 h-20 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full opacity-20 blur-lg animate-pulse group-hover:opacity-40 transition-opacity duration-500"></div>
+              {/* Floating Stats Cards */}
+              <motion.div 
+                className="absolute -left-4 top-1/4 px-4 py-3 bg-gray-800/90 backdrop-blur-sm rounded-2xl border border-gray-700/50 shadow-xl"
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 1 }}
+              >
+                <div className="text-2xl font-bold text-cyan-400">4+</div>
+                <div className="text-xs text-gray-400">Years Exp.</div>
+              </motion.div>
               
-              {/* Additional accent elements */}
-              <div className="absolute top-1/2 -right-2 w-4 h-16 bg-cyan-400 rounded-full opacity-30 animate-pulse group-hover:opacity-60 transition-opacity duration-500"></div>
-              <div className="absolute bottom-1/4 -left-2 w-3 h-12 bg-blue-400 rounded-full opacity-40 animate-pulse group-hover:opacity-70 transition-opacity duration-500"></div>
+              <motion.div 
+                className="absolute -right-4 top-1/2 px-4 py-3 bg-gray-800/90 backdrop-blur-sm rounded-2xl border border-gray-700/50 shadow-xl"
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 1.1 }}
+              >
+                <div className="text-2xl font-bold text-blue-400">40+</div>
+                <div className="text-xs text-gray-400">Projects</div>
+              </motion.div>
               
-              {/* Floating particles */}
-              <div className="absolute top-10 right-10 w-2 h-2 bg-cyan-400 rounded-full animate-ping"></div>
-              <div className="absolute bottom-20 left-10 w-1 h-1 bg-blue-400 rounded-full animate-ping"></div>
-              <div className="absolute top-1/3 left-5 w-1.5 h-1.5 bg-purple-400 rounded-full animate-ping"></div>
+              <motion.div 
+                className="absolute left-1/4 -bottom-2 px-4 py-3 bg-gray-800/90 backdrop-blur-sm rounded-2xl border border-gray-700/50 shadow-xl"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 1.2 }}
+              >
+                <div className="text-2xl font-bold text-purple-400">20+</div>
+                <div className="text-xs text-gray-400">Happy Clients</div>
+              </motion.div>
             </div>
-          </div>
+          </motion.div>
         </div>
+
+        {/* Scroll Indicator */}
+        <motion.div 
+          className="absolute bottom-8 left-1/2 -translate-x-1/2"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 1.5 }}
+        >
+          <div className="w-6 h-10 border-2 border-gray-600 rounded-full flex justify-center pt-2">
+            <motion.div 
+              className="w-1.5 h-1.5 bg-cyan-400 rounded-full"
+              animate={{ y: [0, 12, 0] }}
+              transition={{ duration: 1.5, repeat: Infinity }}
+            />
+          </div>
+        </motion.div>
       </div>
     </section>
   );
