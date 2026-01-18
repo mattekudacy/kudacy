@@ -57,16 +57,16 @@ const HeroSection = () => {
           >
 
           {/* Profile Section */}
-          <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4 sm:gap-6 mb-12 md:mb-16 text-center sm:text-left">
+          <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4 sm:gap-8 mb-12 md:mb-16 text-center sm:text-left">
             <motion.div
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: 0.3, duration: 0.5 }}
-              className="w-20 h-20 sm:w-24 sm:h-24 md:w-32 md:h-32 flex-shrink-0"
+              className="w-28 h-28 sm:w-36 sm:h-36 md:w-44 md:h-44 lg:w-52 lg:h-52 flex-shrink-0"
             >
               <div className="w-full h-full rounded-full border-2 border-gray-700 overflow-hidden bg-gray-800">
-                <div className="w-full h-full flex items-center justify-center text-4xl sm:text-5xl md:text-6xl">
-                  👨‍💻
+                <div className="w-full h-full flex items-center justify-center">
+                  <img src="/images/me.jpg" alt="Cyrus Mante" className="w-full h-full object-cover" />
                 </div>
               </div>
             </motion.div>
