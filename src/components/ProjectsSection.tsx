@@ -1,7 +1,6 @@
 'use client';
 
 import React from 'react';
-import { motion } from 'framer-motion';
 import { FaGithub } from 'react-icons/fa';
 
 const ProjectsSection = () => {
@@ -44,55 +43,41 @@ const ProjectsSection = () => {
   ];
 
   return (
-    <section id="projects" className="py-12 md:py-16 px-4 sm:px-8 md:px-16 lg:px-24 border-t border-gray-800">
-      <div className="w-full">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-        >
-          <p className="text-gray-400 text-sm mb-6 md:mb-8">//projects</p>
-          
-          <div className="space-y-5 md:space-y-6">
-            {projects.map((project, index) => (
-              <motion.div
-                key={project.id}
-                initial={{ opacity: 0 }}
-                whileInView={{ opacity: 1 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.1 }}
-              >
-                <div className="flex items-start gap-3 sm:gap-4">
-                  <FaGithub className="text-gray-400 mt-1 flex-shrink-0 text-sm sm:text-base" />
-                  <div className="flex-1 min-w-0">
-                    <a 
-                      href={project.githubUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-white hover:underline text-sm sm:text-base break-words">
-                      {project.title}
-                    </a>
-                    <p className="text-gray-400 text-xs sm:text-sm mt-1">
-                      <span className="text-gray-500">// </span>
-                      {project.description}
-                    </p>
-                    <div className="flex flex-wrap gap-1 sm:gap-2 mt-2">
-                      {project.tech.map((tech) => (
-                        <span 
-                          key={tech}
-                          className="text-xs text-gray-500"
-                        >
-                          {tech}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
+    <section className="max-w-4xl">
+      <h2 className="text-xs text-gray-500 dark:text-gray-500 mb-8 font-medium uppercase tracking-widest">//projects</h2>
+
+      <div className="space-y-6">
+        {projects.map((project) => (
+          <a
+            key={project.id}
+            href={project.githubUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="group block"
+          >
+            <div className="flex items-start gap-4">
+              <FaGithub className="text-zinc-400 dark:text-zinc-600 mt-1 flex-shrink-0" />
+              <div className="flex-1 min-w-0">
+                <span className="text-zinc-900 dark:text-zinc-100 group-hover:text-primary transition-colors text-sm">
+                  {project.title}
+                </span>
+                <p className="text-zinc-600 dark:text-zinc-500 text-sm mt-1">
+                  {project.description}
+                </p>
+                <div className="flex flex-wrap gap-3 mt-2">
+                  {project.tech.map((tech) => (
+                    <span
+                      key={tech}
+                      className="text-[10px] text-zinc-500 uppercase tracking-widest"
+                    >
+                      {tech}
+                    </span>
+                  ))}
                 </div>
-              </motion.div>
-            ))}
-          </div>
-        </motion.div>
+              </div>
+            </div>
+          </a>
+        ))}
       </div>
     </section>
   );

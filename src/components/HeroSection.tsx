@@ -1,10 +1,17 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
-import { motion } from 'framer-motion';
+import React, { useEffect, useState, useRef } from 'react';
+import Footer from './Footer';
 
-const HeroSection = () => {
+interface HeroSectionProps {
+  children?: React.ReactNode;
+}
+
+const HeroSection = ({ children }: HeroSectionProps) => {
   const [time, setTime] = useState('');
+  const [isDark, setIsDark] = useState(true);
+  const nameRef = useRef<HTMLHeadingElement>(null);
+  const [nameVisible, setNameVisible] = useState(false);
 
   useEffect(() => {
     const updateTime = () => {
@@ -14,152 +21,183 @@ const HeroSection = () => {
         hour: '2-digit',
         minute: '2-digit',
         second: '2-digit',
-        hour12: true
+        hour12: true,
       });
       setTime(timeString);
     };
 
     updateTime();
     const interval = setInterval(updateTime, 1000);
+
+    // Trigger name animation after mount
+    setTimeout(() => setNameVisible(true), 300);
+
     return () => clearInterval(interval);
   }, []);
 
+  const toggleTheme = () => {
+    document.documentElement.classList.toggle('dark');
+    setIsDark(!isDark);
+  };
+
   return (
     <>
-      {/* Fixed Top Header */}
-      <header className="fixed top-0 left-0 right-0 z-50 bg-[#0f0f0f] border-b border-gray-800 px-4 sm:px-8 md:px-16 lg:px-24 py-3 md:py-4">
-        <div className="flex flex-wrap justify-between text-[10px] sm:text-xs md:text-sm gap-4 md:gap-6">
-          <div className="flex flex-col">
-            <span className="text-gray-500">//portfolio</span>
-            <span className="text-gray-300">mattekudacy.is-a.dev</span>
-          </div>
-          <div className="flex flex-col">
-            <span className="text-gray-500">//contact</span>
-            <span className="text-gray-300 truncate max-w-[120px] sm:max-w-none">cyrus2952@gmail.com</span>
-          </div>
-          <div className="flex flex-col hidden sm:flex">
-            <span className="text-gray-500">//github</span>
-            <span className="text-gray-300">github.com/mattekudacy</span>
-          </div>
-          <div className="flex flex-col">
-            <span className="text-gray-500">//location</span>
-            <span className="text-gray-300">PH {time}</span>
-          </div>
-        </div>
-      </header>
+      {/* Scanline effect */}
+      <div className="scanline" />
 
-      <section id="home" className="min-h-screen relative px-4 sm:px-8 md:px-16 lg:px-24 pt-28 sm:pt-32 pb-16 md:pb-20">
-        <div className="w-full">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-          >
+      {/* Theme toggle button */}
+      <button
+        onClick={toggleTheme}
+        className="fixed bottom-8 right-8 z-50 p-3 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 hover:border-primary transition-colors text-xs"
+      >
+        [TOGGLE_THEME]
+      </button>
 
-          {/* Profile Section */}
-          <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4 sm:gap-8 mb-12 md:mb-16 text-center sm:text-left">
-            <motion.div
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.3, duration: 0.5 }}
-              className="w-28 h-28 sm:w-36 sm:h-36 md:w-44 md:h-44 lg:w-52 lg:h-52 flex-shrink-0"
-            >
-              <div className="w-full h-full rounded-full border-2 border-gray-700 overflow-hidden bg-gray-800">
-                <div className="w-full h-full flex items-center justify-center">
-                  <img src="/images/me.jpg" alt="Cyrus Mante" className="w-full h-full object-cover" />
-                </div>
-              </div>
-            </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.5, duration: 0.5 }}
-            >
-              <h1 className="text-xl sm:text-2xl md:text-4xl lg:text-5xl font-bold text-white">
-                &lt;Cyrus Mante&gt;
-              </h1> 
-              <p className="text-sm sm:text-base md:text-lg text-gray-400 mt-1">
-                //ai engineer and data scientist
-              </p>
-            </motion.div>
+      <div className="max-w-6xl mx-auto border-x terminal-border min-h-screen">
+        {/* Header */}
+        <header className="grid grid-cols-1 md:grid-cols-4 border-b terminal-border">
+          <div className="p-6 border-b md:border-b-0 md:border-r terminal-border">
+            <p className="text-[10px] text-gray-500 dark:text-gray-500 mb-1">//portfolio</p>
+            <a className="text-sm hover:text-primary transition-colors" href="#">mattekudacy.is-a.dev</a>
           </div>
-
-          {/* About Section */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.7, duration: 0.5 }}
-            className="mb-12 md:mb-16"
-          >
-            <p className="text-gray-400 text-sm mb-3 md:mb-4">//about</p>
-            <p className="text-gray-300 text-xs sm:text-sm md:text-base leading-relaxed">
-              hi, i&apos;m Cyrus, my friends call me cy. i enjoy building 
-              dynamic, creative products from start to finish, focused on 
-              developing intuitive experiences that constantly grow and improve 
-              based on your satisfaction.
+          <div className="p-6 border-b md:border-b-0 md:border-r terminal-border">
+            <p className="text-[10px] text-gray-500 dark:text-gray-500 mb-1">//contact</p>
+            <a className="text-sm hover:text-primary transition-colors" href="mailto:cyrus2952@gmail.com">cyrus2952@gmail.com</a>
+          </div>
+          <div className="p-6 border-b md:border-b-0 md:border-r terminal-border">
+            <p className="text-[10px] text-gray-500 dark:text-gray-500 mb-1">//github</p>
+            <a className="text-sm hover:text-primary transition-colors break-all" href="https://github.com/mattekudacy" target="_blank" rel="noopener noreferrer">github.com/mattekudacy</a>
+          </div>
+          <div className="p-6">
+            <p className="text-[10px] text-gray-500 dark:text-gray-500 mb-1">//location</p>
+            <p className="text-sm flex justify-between items-center">
+              <span>Philippines</span>
+              <span className="text-[10px] opacity-50 uppercase">{time}</span>
             </p>
-          </motion.div>
+          </div>
+        </header>
 
-          {/* Work Experience Section */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.9, duration: 0.5 }}
-          >
-            <p className="text-gray-400 text-sm mb-6 md:mb-8">//work experience</p>
-            
-            <div className="space-y-8 md:space-y-10">
+        {/* Main content */}
+        <main className="p-6 md:p-12">
+          {/* Hero - Profile + Name */}
+          <section className="flex flex-col md:flex-row items-center gap-8 mb-24 mt-12">
+            <div className="relative group">
+              <div className="absolute -inset-1 bg-primary/20 rounded-full blur opacity-0 group-hover:opacity-100 transition duration-500" />
+              <img
+                alt="Cyrus Mante"
+                className="w-32 h-32 md:w-40 md:h-40 rounded-full border-2 border-zinc-200 dark:border-zinc-800 grayscale hover:grayscale-0 transition-all duration-500 object-cover relative"
+                src="/images/me.jpg"
+              />
+            </div>
+            <div>
+              <h1
+                ref={nameRef}
+                className={`text-3xl md:text-5xl font-light text-zinc-900 dark:text-white mb-2 transition-opacity duration-500 ${nameVisible ? 'opacity-100' : 'opacity-0'}`}
+              >
+                &lt;Cyrus Mante&gt;
+              </h1>
+              <p className="text-zinc-500 dark:text-zinc-500 text-lg md:text-xl font-light">
+                //ai engineer &amp; data scientist
+              </p>
+            </div>
+          </section>
+
+          {/* Sections container */}
+          <div className="space-y-20 max-w-4xl">
+            {/* About */}
+            <section>
+              <h2 className="text-xs text-gray-500 dark:text-gray-500 mb-6 font-medium uppercase tracking-widest">//about</h2>
+              <div className="space-y-4 text-zinc-700 dark:text-zinc-400 leading-relaxed max-w-2xl">
+                <p>
+                  hi, i&apos;m Cyrus, my friends call me cy. i enjoy building
+                  dynamic, creative products from start to finish, focused on
+                  developing intuitive experiences that constantly grow and improve
+                  based on your satisfaction.
+                </p>
+              </div>
+            </section>
+
+            {/* Work Experience */}
+            <section>
+              <h2 className="text-xs text-gray-500 dark:text-gray-500 mb-8 font-medium uppercase tracking-widest">//work experience</h2>
+
               {/* Job 1 */}
-              <div className="grid grid-cols-1 sm:grid-cols-[140px,1fr] md:grid-cols-[180px,1fr] gap-2 sm:gap-4">
-                <div className="text-xs sm:text-sm text-gray-500">
+              <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-start mb-12">
+                <div className="md:col-span-3 text-zinc-500 dark:text-zinc-600 text-xs mt-1">
                   oct 2025 - present
                 </div>
-                <div>
-                  <div className="inline-block px-2 sm:px-3 py-1 border border-gray-600 rounded text-xs sm:text-sm mb-2 sm:mb-3">
-                    <span className="text-white">Cambridge University Press</span>
-                    <span className="text-gray-400 block sm:inline"> //ai software developer</span>
+                <div className="md:col-span-9">
+                  <div className="border border-zinc-200 dark:border-zinc-800 p-4 inline-block mb-6 hover:border-primary transition-colors">
+                    <span className="text-zinc-900 dark:text-zinc-100">Cambridge University Press</span>
+                    <span className="text-zinc-400 dark:text-zinc-600 ml-2">//ai software developer</span>
                   </div>
-                  <ul className="text-xs sm:text-sm text-gray-300 space-y-2">
-                    <li className="flex gap-2">
-                      <span className="text-gray-500">●</span>
-                      <span>collaborate with design teams to implement various complex user interfaces to prioritize features for the product releases.</span>
+                  <ul className="space-y-4">
+                    <li className="flex items-start gap-4">
+                      <span className="w-1.5 h-1.5 rounded-full bg-zinc-400 dark:bg-zinc-600 mt-2 shrink-0" />
+                      <p className="text-zinc-700 dark:text-zinc-400 text-sm">collaborate with design teams to implement various complex user interfaces to prioritize features for the product releases.</p>
                     </li>
-                    <li className="flex gap-2">
-                      <span className="text-gray-500">●</span>
-                      <span>migrated endpoints architecture from monolith to microservices for efficient scaling.</span>
+                    <li className="flex items-start gap-4">
+                      <span className="w-1.5 h-1.5 rounded-full bg-zinc-400 dark:bg-zinc-600 mt-2 shrink-0" />
+                      <p className="text-zinc-700 dark:text-zinc-400 text-sm">migrated endpoints architecture from monolith to microservices for efficient scaling.</p>
                     </li>
                   </ul>
                 </div>
               </div>
 
               {/* Job 2 */}
-              <div className="grid grid-cols-1 sm:grid-cols-[140px,1fr] md:grid-cols-[180px,1fr] gap-2 sm:gap-4">
-                <div className="text-xs sm:text-sm text-gray-500">
+              <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-start">
+                <div className="md:col-span-3 text-zinc-500 dark:text-zinc-600 text-xs mt-1">
                   sept 2024 - sept 2025
                 </div>
-                <div>
-                  <div className="inline-block px-2 sm:px-3 py-1 border border-gray-600 rounded text-xs sm:text-sm mb-2 sm:mb-3">
-                    <span className="text-white">Accenture</span>
-                    <span className="text-gray-400 block sm:inline"> //ai/ml computational science analyst</span>
+                <div className="md:col-span-9">
+                  <div className="border border-zinc-200 dark:border-zinc-800 p-4 inline-block mb-6 hover:border-primary transition-colors">
+                    <span className="text-zinc-900 dark:text-zinc-100">Accenture</span>
+                    <span className="text-zinc-400 dark:text-zinc-600 ml-2">//ai/ml computational science analyst</span>
                   </div>
-                  <ul className="text-xs sm:text-sm text-gray-300 space-y-2">
-                    <li className="flex gap-2">
-                      <span className="text-gray-500">●</span>
-                      <span>developed and deployed machine learning models for predictive analytics and natural language processing.</span>
+                  <ul className="space-y-4">
+                    <li className="flex items-start gap-4">
+                      <span className="w-1.5 h-1.5 rounded-full bg-zinc-400 dark:bg-zinc-600 mt-2 shrink-0" />
+                      <p className="text-zinc-700 dark:text-zinc-400 text-sm">developed and deployed machine learning models for predictive analytics and natural language processing.</p>
                     </li>
-                    <li className="flex gap-2">
-                      <span className="text-gray-500">●</span>
-                      <span>built data pipelines and automated workflows for model training and inference.</span>
+                    <li className="flex items-start gap-4">
+                      <span className="w-1.5 h-1.5 rounded-full bg-zinc-400 dark:bg-zinc-600 mt-2 shrink-0" />
+                      <p className="text-zinc-700 dark:text-zinc-400 text-sm">built data pipelines and automated workflows for model training and inference.</p>
                     </li>
                   </ul>
                 </div>
               </div>
-            </div>
-          </motion.div>
-          </motion.div>
-        </div>
-      </section>
+            </section>
+
+            {/* Technologies */}
+            <section>
+              <h2 className="text-xs text-gray-500 dark:text-gray-500 mb-8 font-medium uppercase tracking-widest">//technologies</h2>
+              <div className="flex flex-wrap gap-x-12 gap-y-6">
+                <div>
+                  <p className="text-[10px] text-zinc-500 mb-2 uppercase tracking-widest">AI/ML</p>
+                  <p className="text-sm">Python, TensorFlow, PyTorch, Scikit-learn</p>
+                </div>
+                <div>
+                  <p className="text-[10px] text-zinc-500 mb-2 uppercase tracking-widest">Frontend</p>
+                  <p className="text-sm">React, Next.js, TypeScript, TailwindCSS</p>
+                </div>
+                <div>
+                  <p className="text-[10px] text-zinc-500 mb-2 uppercase tracking-widest">Backend</p>
+                  <p className="text-sm">Node.js, Django, FastAPI, PostgreSQL</p>
+                </div>
+                <div>
+                  <p className="text-[10px] text-zinc-500 mb-2 uppercase tracking-widest">Cloud</p>
+                  <p className="text-sm">AWS, Docker, GCP, Azure</p>
+                </div>
+              </div>
+            </section>
+
+            {/* Child sections (Projects, Blog, Contact) */}
+            {children}
+          </div>
+        </main>
+
+        <Footer />
+      </div>
     </>
   );
 };
