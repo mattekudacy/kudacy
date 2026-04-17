@@ -1,53 +1,99 @@
 'use client';
 
 import React from 'react';
-import { FaEnvelope, FaGithub, FaLinkedin } from 'react-icons/fa';
 
 const ContactSection = () => {
   return (
-    <section className="max-w-4xl">
-      <h2 className="text-xs text-gray-500 dark:text-gray-500 mb-2 font-medium uppercase tracking-widest">//contact</h2>
-      <p className="text-zinc-500 dark:text-zinc-600 text-sm mb-8">
-        have a project in mind? i&apos;d love to hear about it.
-      </p>
+    <table id="contact" width="100%" cellPadding={8} cellSpacing={0} style={{ border: '3px ridge #006688', background: '#f0faff', marginBottom: '8px' }}>
+      <tbody>
+        <tr>
+          <td>
+            <div style={{ background: 'linear-gradient(90deg, #004466, #0088bb)', color: '#ffff00', fontWeight: 'bold', fontSize: '13px', padding: '4px 8px', marginBottom: '8px', fontFamily: '"Arial Black", sans-serif' }}>
+              📬 CONTACT ME!!! DON&apos;T BE SHY!!! 📬
+            </div>
 
-      <div className="space-y-4">
-        <a
-          href="mailto:cyrus2952@gmail.com"
-          className="flex items-center gap-4 text-zinc-700 dark:text-zinc-400 hover:text-primary transition-colors text-sm"
-        >
-          <FaEnvelope className="text-zinc-400 dark:text-zinc-600 flex-shrink-0" />
-          <span>cyrus2952@gmail.com</span>
-        </a>
+            <p style={{ fontSize: '12px', fontFamily: '"Comic Sans MS", cursive', color: '#004466', marginBottom: '12px', lineHeight: '1.6' }}>
+              Have a project in mind?? I&apos;d <strong>LOVE</strong> to hear about it!!!
+              Click the buttons below or yell at me on the internet!!! 🎉
+            </p>
 
-        <a
-          href="https://github.com/mattekudacy"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="flex items-center gap-4 text-zinc-700 dark:text-zinc-400 hover:text-primary transition-colors text-sm"
-        >
-          <FaGithub className="text-zinc-400 dark:text-zinc-600 flex-shrink-0" />
-          <span>github.com/mattekudacy</span>
-        </a>
+            <table cellPadding={4} cellSpacing={6}>
+              <tbody>
+                <tr>
+                  <td>
+                    <a
+                      href="mailto:cyrus2952@gmail.com"
+                      style={{
+                        display: 'inline-block',
+                        background: 'linear-gradient(180deg, #ffcccc, #ff6666)',
+                        border: '3px outset #ff0000',
+                        padding: '6px 14px',
+                        fontSize: '12px',
+                        fontWeight: 'bold',
+                        color: '#ffffff',
+                        textDecoration: 'none',
+                        fontFamily: '"Arial", sans-serif',
+                        whiteSpace: 'nowrap',
+                      }}
+                    >
+                      📧 EMAIL ME!!!
+                    </a>
+                  </td>
+                  <td>
+                    <a
+                      href="https://github.com/mattekudacy"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      style={{
+                        display: 'inline-block',
+                        background: 'linear-gradient(180deg, #cccccc, #333333)',
+                        border: '3px outset #666666',
+                        padding: '6px 14px',
+                        fontSize: '12px',
+                        fontWeight: 'bold',
+                        color: '#ffffff',
+                        textDecoration: 'none',
+                        fontFamily: '"Arial", sans-serif',
+                        whiteSpace: 'nowrap',
+                      }}
+                    >
+                      🐙 MY GITHUB!!!
+                    </a>
+                  </td>
+                  <td>
+                    <a
+                      href="https://linkedin.com/in/cyrusmante"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      style={{
+                        display: 'inline-block',
+                        background: 'linear-gradient(180deg, #aaccff, #0066cc)',
+                        border: '3px outset #0044aa',
+                        padding: '6px 14px',
+                        fontSize: '12px',
+                        fontWeight: 'bold',
+                        color: '#ffffff',
+                        textDecoration: 'none',
+                        fontFamily: '"Arial", sans-serif',
+                        whiteSpace: 'nowrap',
+                      }}
+                    >
+                      👔 LINKEDIN!!!
+                    </a>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
 
-        <a
-          href="https://linkedin.com/in/cyrusmante"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="flex items-center gap-4 text-zinc-700 dark:text-zinc-400 hover:text-primary transition-colors text-sm"
-        >
-          <FaLinkedin className="text-zinc-400 dark:text-zinc-600 flex-shrink-0" />
-          <span>linkedin.com/in/cyrusmante</span>
-        </a>
-      </div>
-
-      <div className="mt-8">
-        <div className="flex items-center gap-2">
-          <span className="w-2 h-2 bg-primary rounded-full animate-pulse" />
-          <span className="text-zinc-500 dark:text-zinc-600 text-xs">status: available for work</span>
-        </div>
-      </div>
-    </section>
+            <div style={{ marginTop: '12px', padding: '6px', background: '#ccffcc', border: '2px solid #00aa00', display: 'inline-block' }}>
+              <span style={{ fontSize: '12px', fontFamily: '"Comic Sans MS", cursive', color: '#006600' }}>
+                ✅ STATUS: <strong>AVAILABLE FOR WORK!!!</strong> 🎉🎉🎉
+              </span>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
   );
 };
 

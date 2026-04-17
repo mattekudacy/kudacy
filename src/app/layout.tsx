@@ -23,9 +23,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html className="dark" lang="en">
+    <html lang="en">
       <body
-        className={`${jetbrainsMono.variable} font-mono bg-background-light dark:bg-background-dark text-gray-800 dark:text-gray-300 min-h-screen antialiased selection:bg-primary/30`}
+        className={`${jetbrainsMono.variable} min-h-screen`}
       >
         {children}
         {/* <CyrusAssistant /> */}
