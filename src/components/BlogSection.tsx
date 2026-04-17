@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { FaArrowRight } from 'react-icons/fa';
 import Link from 'next/link';
 import { BlogPost } from '@/lib/sanity';
 
@@ -29,70 +28,92 @@ const BlogSection = () => {
       year: 'numeric',
       month: 'short',
       day: 'numeric'
-    }).toLowerCase();
+    });
   };
 
-  if (loading) {
-    return (
-      <section className="max-w-4xl">
-        <h2 className="text-xs text-gray-500 dark:text-gray-500 mb-8 font-medium uppercase tracking-widest">//blog</h2>
-        <div className="space-y-4">
-          {[1, 2, 3].map((i) => (
-            <div key={i} className="animate-pulse">
-              <div className="h-3 bg-zinc-200 dark:bg-zinc-800 w-1/4 mb-2" />
-              <div className="h-4 bg-zinc-200 dark:bg-zinc-800 w-3/4" />
-            </div>
-          ))}
-        </div>
-      </section>
-    );
-  }
-
   return (
-    <section className="max-w-4xl">
-      <h2 className="text-xs text-gray-500 dark:text-gray-500 mb-2 font-medium uppercase tracking-widest">//blog</h2>
-      <p className="text-zinc-500 dark:text-zinc-600 text-sm mb-8">
-        sharing insights from talks, projects, and learnings in AI/ML.
-      </p>
+    <table id="blog" width="100%" cellPadding={8} cellSpacing={0} style={{ border: '3px ridge #660066', background: '#fff0ff', marginBottom: '8px' }}>
+      <tbody>
+        <tr>
+          <td>
+            <div style={{ background: 'linear-gradient(90deg, #660066, #cc00cc)', color: '#ffffff', fontWeight: 'bold', fontSize: '13px', padding: '4px 8px', marginBottom: '8px', fontFamily: '"Arial Black", sans-serif' }}>
+              📝 MY SUPER COOL BLOG POSTS!!! 📝
+            </div>
 
-      {posts.length > 0 ? (
-        <div className="space-y-6">
-          {posts.map((post) => (
-            <Link
-              key={post._id}
-              href={`/blog/${post.slug.current}`}
-              className="group block"
-            >
-              <div className="flex items-start justify-between gap-4">
-                <div className="min-w-0 flex-1">
-                  <span className="text-zinc-500 dark:text-zinc-600 text-xs">{formatDate(post.publishedAt)}</span>
-                  <h3 className="text-zinc-900 dark:text-zinc-100 group-hover:text-primary transition-colors mt-1 text-sm">
-                    {post.title}
-                  </h3>
-                  <p className="text-zinc-600 dark:text-zinc-500 text-sm mt-1">
-                    {post.excerpt}
-                  </p>
-                </div>
-                <FaArrowRight className="text-zinc-400 dark:text-zinc-600 group-hover:text-primary group-hover:translate-x-1 transition-all flex-shrink-0 mt-2 text-xs" />
+            {loading ? (
+              <div style={{ fontSize: '12px', fontFamily: '"Comic Sans MS", cursive', color: '#660066', textAlign: 'center', padding: '12px' }}>
+                ⏳ Loading posts... please wait!!!
               </div>
-            </Link>
-          ))}
-
-          <div className="pt-4">
-            <Link
-              href="/blog"
-              className="text-zinc-500 hover:text-primary transition-colors text-sm"
-            >
-              view all posts →
-            </Link>
-          </div>
-        </div>
-      ) : (
-        <p className="text-zinc-500 dark:text-zinc-600 text-sm">
-          no posts found. check back soon!
-        </p>
-      )}
-    </section>
+            ) : posts.length > 0 ? (
+              <table width="100%" cellPadding={0} cellSpacing={4}>
+                <tbody>
+                  {posts.map((post, idx) => (
+                    <tr key={post._id}>
+                      <td style={{ border: '2px inset #cc88cc', background: idx % 2 === 0 ? '#ffffff' : '#fff5ff', padding: '6px' }}>
+                        <div style={{ fontSize: '10px', fontFamily: '"Arial", sans-serif', color: '#888888' }}>
+                          📅 {formatDate(post.publishedAt)}
+                        </div>
+                        <Link
+                          href={`/blog/${post.slug.current}`}
+                          style={{ fontWeight: 'bold', fontSize: '12px', fontFamily: '"Arial", sans-serif', color: '#660066', display: 'block', marginTop: '2px' }}
+                        >
+                          {post.title}
+                        </Link>
+                        <div style={{ fontSize: '11px', fontFamily: '"Comic Sans MS", cursive', color: '#333333', marginTop: '3px', lineHeight: '1.5' }}>
+                          {post.excerpt}
+                        </div>
+                        <div style={{ marginTop: '4px' }}>
+                          <Link
+                            href={`/blog/${post.slug.current}`}
+                            style={{
+                              display: 'inline-block',
+                              background: 'linear-gradient(180deg, #ff88ff, #cc00cc)',
+                              color: '#ffffff',
+                              fontSize: '9px',
+                              padding: '2px 8px',
+                              textDecoration: 'none',
+                              fontWeight: 'bold',
+                              fontFamily: '"Arial", sans-serif',
+                              border: '1px outset #ffffff',
+                            }}
+                          >
+                            READ MORE »»»
+                          </Link>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                  <tr>
+                    <td style={{ textAlign: 'right', paddingTop: '6px' }}>
+                      <Link
+                        href="/blog"
+                        style={{
+                          display: 'inline-block',
+                          background: 'linear-gradient(180deg, #ffffff, #cccccc)',
+                          border: '2px outset #ffffff',
+                          padding: '3px 10px',
+                          fontSize: '11px',
+                          fontWeight: 'bold',
+                          color: '#660066',
+                          textDecoration: 'none',
+                          fontFamily: '"Arial", sans-serif',
+                        }}
+                      >
+                        📖 VIEW ALL POSTS!!!
+                      </Link>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            ) : (
+              <div style={{ fontSize: '12px', fontFamily: '"Comic Sans MS", cursive', color: '#660066', textAlign: 'center', padding: '12px' }}>
+                😢 No posts found yet... check back soon!!!
+              </div>
+            )}
+          </td>
+        </tr>
+      </tbody>
+    </table>
   );
 };
 
