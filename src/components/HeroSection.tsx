@@ -1,14 +1,14 @@
-'use client';
+"use client";
 
-import React, { useEffect, useState, useRef } from 'react';
-import Footer from './Footer';
+import React, { useEffect, useState, useRef } from "react";
+import Footer from "./Footer";
 
 interface HeroSectionProps {
   children?: React.ReactNode;
 }
 
 const HeroSection = ({ children }: HeroSectionProps) => {
-  const [time, setTime] = useState('');
+  const [time, setTime] = useState("");
   const [isDark, setIsDark] = useState(true);
   const nameRef = useRef<HTMLHeadingElement>(null);
   const [nameVisible, setNameVisible] = useState(false);
@@ -16,11 +16,11 @@ const HeroSection = ({ children }: HeroSectionProps) => {
   useEffect(() => {
     const updateTime = () => {
       const now = new Date();
-      const timeString = now.toLocaleString('en-US', {
-        timeZone: 'Asia/Manila',
-        hour: '2-digit',
-        minute: '2-digit',
-        second: '2-digit',
+      const timeString = now.toLocaleString("en-US", {
+        timeZone: "Asia/Manila",
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
         hour12: true,
       });
       setTime(timeString);
@@ -36,7 +36,7 @@ const HeroSection = ({ children }: HeroSectionProps) => {
   }, []);
 
   const toggleTheme = () => {
-    document.documentElement.classList.toggle('dark');
+    document.documentElement.classList.toggle("dark");
     setIsDark(!isDark);
   };
 
@@ -57,19 +57,44 @@ const HeroSection = ({ children }: HeroSectionProps) => {
         {/* Header */}
         <header className="grid grid-cols-1 md:grid-cols-4 border-b terminal-border">
           <div className="p-6 border-b md:border-b-0 md:border-r terminal-border">
-            <p className="text-[10px] text-gray-500 dark:text-gray-500 mb-1">//portfolio</p>
-            <a className="text-sm hover:text-primary transition-colors" href="#">mattekudacy.is-a.dev</a>
+            <p className="text-[10px] text-gray-500 dark:text-gray-500 mb-1">
+              //portfolio
+            </p>
+            <a
+              className="text-sm hover:text-primary transition-colors"
+              href="#"
+            >
+              mattekudacy.is-a.dev
+            </a>
           </div>
           <div className="p-6 border-b md:border-b-0 md:border-r terminal-border">
-            <p className="text-[10px] text-gray-500 dark:text-gray-500 mb-1">//contact</p>
-            <a className="text-sm hover:text-primary transition-colors" href="mailto:cyrus2952@gmail.com">cyrus2952@gmail.com</a>
+            <p className="text-[10px] text-gray-500 dark:text-gray-500 mb-1">
+              //contact
+            </p>
+            <a
+              className="text-sm hover:text-primary transition-colors"
+              href="mailto:cyrus2952@gmail.com"
+            >
+              cyrus2952@gmail.com
+            </a>
           </div>
           <div className="p-6 border-b md:border-b-0 md:border-r terminal-border">
-            <p className="text-[10px] text-gray-500 dark:text-gray-500 mb-1">//github</p>
-            <a className="text-sm hover:text-primary transition-colors break-all" href="https://github.com/mattekudacy" target="_blank" rel="noopener noreferrer">github.com/mattekudacy</a>
+            <p className="text-[10px] text-gray-500 dark:text-gray-500 mb-1">
+              //github
+            </p>
+            <a
+              className="text-sm hover:text-primary transition-colors break-all"
+              href="https://github.com/mattekudacy"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              github.com/mattekudacy
+            </a>
           </div>
           <div className="p-6">
-            <p className="text-[10px] text-gray-500 dark:text-gray-500 mb-1">//location</p>
+            <p className="text-[10px] text-gray-500 dark:text-gray-500 mb-1">
+              //location
+            </p>
             <p className="text-sm flex justify-between items-center">
               <span>Philippines</span>
               <span className="text-[10px] opacity-50 uppercase">{time}</span>
@@ -92,7 +117,7 @@ const HeroSection = ({ children }: HeroSectionProps) => {
             <div>
               <h1
                 ref={nameRef}
-                className={`text-3xl md:text-5xl font-light text-zinc-900 dark:text-white mb-2 transition-opacity duration-500 ${nameVisible ? 'opacity-100' : 'opacity-0'}`}
+                className={`text-3xl md:text-5xl font-light text-zinc-900 dark:text-white mb-2 transition-opacity duration-500 ${nameVisible ? "opacity-100" : "opacity-0"}`}
               >
                 &lt;Cyrus Mante&gt;
               </h1>
@@ -106,20 +131,24 @@ const HeroSection = ({ children }: HeroSectionProps) => {
           <div className="space-y-20 max-w-4xl">
             {/* About */}
             <section>
-              <h2 className="text-xs text-gray-500 dark:text-gray-500 mb-6 font-medium uppercase tracking-widest">//about</h2>
+              <h2 className="text-xs text-gray-500 dark:text-gray-500 mb-6 font-medium uppercase tracking-widest">
+                //about
+              </h2>
               <div className="space-y-4 text-zinc-700 dark:text-zinc-400 leading-relaxed max-w-2xl">
                 <p>
-                  hi, i&apos;m Cyrus, my friends call me cy. i enjoy building
-                  dynamic, creative products from start to finish, focused on
-                  developing intuitive experiences that constantly grow and improve
-                  based on your satisfaction.
+                  hi, i&apos;m Cyrus, my friends call me cy. i enjoy building AI
+                  systems from start to finish, focused on developing intuitive
+                  experiences and evaluation metrics that constantly grow and
+                  improve based on your satisfaction.
                 </p>
               </div>
             </section>
 
             {/* Work Experience */}
             <section>
-              <h2 className="text-xs text-gray-500 dark:text-gray-500 mb-8 font-medium uppercase tracking-widest">//work experience</h2>
+              <h2 className="text-xs text-gray-500 dark:text-gray-500 mb-8 font-medium uppercase tracking-widest">
+                //work experience
+              </h2>
 
               {/* Job 1 */}
               <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-start mb-12">
@@ -128,40 +157,136 @@ const HeroSection = ({ children }: HeroSectionProps) => {
                 </div>
                 <div className="md:col-span-9">
                   <div className="border border-zinc-200 dark:border-zinc-800 p-4 inline-block mb-6 hover:border-primary transition-colors">
-                    <span className="text-zinc-900 dark:text-zinc-100">Cambridge University Press</span>
-                    <span className="text-zinc-400 dark:text-zinc-600 ml-2">//ai software developer</span>
+                    <span className="text-zinc-900 dark:text-zinc-100">
+                      Cambridge University Press
+                    </span>
+                    <span className="text-zinc-400 dark:text-zinc-600 ml-2">
+                      //ai software developer
+                    </span>
                   </div>
                   <ul className="space-y-4">
                     <li className="flex items-start gap-4">
                       <span className="w-1.5 h-1.5 rounded-full bg-zinc-400 dark:bg-zinc-600 mt-2 shrink-0" />
-                      <p className="text-zinc-700 dark:text-zinc-400 text-sm">collaborate with design teams to implement various complex user interfaces to prioritize features for the product releases.</p>
+                      <p className="text-zinc-700 dark:text-zinc-400 text-sm">
+                        architects and deploys scalable, secure Generative AI
+                        solutions using agentic design and prompt engineering.
+                        within a cross-functional coe.
+                      </p>
                     </li>
                     <li className="flex items-start gap-4">
                       <span className="w-1.5 h-1.5 rounded-full bg-zinc-400 dark:bg-zinc-600 mt-2 shrink-0" />
-                      <p className="text-zinc-700 dark:text-zinc-400 text-sm">migrated endpoints architecture from monolith to microservices for efficient scaling.</p>
+                      <p className="text-zinc-700 dark:text-zinc-400 text-sm">
+                        drive engineering productivity via ai automation,
+                        streamlining workflows to accelerate the delivery of
+                        high-performance business solutions.
+                      </p>
                     </li>
                   </ul>
                 </div>
               </div>
 
               {/* Job 2 */}
-              <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-start">
+              <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-start mb-12">
                 <div className="md:col-span-3 text-zinc-500 dark:text-zinc-600 text-xs mt-1">
                   sept 2024 - sept 2025
                 </div>
                 <div className="md:col-span-9">
                   <div className="border border-zinc-200 dark:border-zinc-800 p-4 inline-block mb-6 hover:border-primary transition-colors">
-                    <span className="text-zinc-900 dark:text-zinc-100">Accenture</span>
-                    <span className="text-zinc-400 dark:text-zinc-600 ml-2">//ai/ml computational science analyst</span>
+                    <span className="text-zinc-900 dark:text-zinc-100">
+                      Accenture
+                    </span>
+                    <span className="text-zinc-400 dark:text-zinc-600 ml-2">
+                      //ai/ml computational science analyst
+                    </span>
                   </div>
                   <ul className="space-y-4">
                     <li className="flex items-start gap-4">
                       <span className="w-1.5 h-1.5 rounded-full bg-zinc-400 dark:bg-zinc-600 mt-2 shrink-0" />
-                      <p className="text-zinc-700 dark:text-zinc-400 text-sm">developed and deployed machine learning models for predictive analytics and natural language processing.</p>
+                      <p className="text-zinc-700 dark:text-zinc-400 text-sm">
+                        apply ai models to streamline internal workflows and
+                        develop web applications that integrate llms into the
+                        engineering process.
+                      </p>
                     </li>
                     <li className="flex items-start gap-4">
                       <span className="w-1.5 h-1.5 rounded-full bg-zinc-400 dark:bg-zinc-600 mt-2 shrink-0" />
-                      <p className="text-zinc-700 dark:text-zinc-400 text-sm">built data pipelines and automated workflows for model training and inference.</p>
+                      <p className="text-zinc-700 dark:text-zinc-400 text-sm">
+                        collaborating with onshore teams, i lead the proposal,
+                        documentation, and deployment of these tools to ensure
+                        scalable, production-aligned ai adoption.
+                      </p>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+
+              {/* Job 3 */}
+              <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-start mb-12">
+                <div className="md:col-span-3 text-zinc-500 dark:text-zinc-600 text-xs mt-1">
+                  dec 2021 - mar 2024
+                </div>
+                <div className="md:col-span-9">
+                  <div className="border border-zinc-200 dark:border-zinc-800 p-4 inline-block mb-6 hover:border-primary transition-colors">
+                    <span className="text-zinc-900 dark:text-zinc-100">
+                      Freelancing
+                    </span>
+                    <span className="text-zinc-400 dark:text-zinc-600 ml-2">
+                      //ml engineer
+                    </span>
+                  </div>
+                  <ul className="space-y-4">
+                    <li className="flex items-start gap-4">
+                      <span className="w-1.5 h-1.5 rounded-full bg-zinc-400 dark:bg-zinc-600 mt-2 shrink-0" />
+                      <p className="text-zinc-700 dark:text-zinc-400 text-sm">
+                        collaborated with a team of engineers to develop and
+                        deploy production-grade machine learning models,
+                        specializing in high-accuracy computer vision.
+                      </p>
+                    </li>
+                    <li className="flex items-start gap-4">
+                      <span className="w-1.5 h-1.5 rounded-full bg-zinc-400 dark:bg-zinc-600 mt-2 shrink-0" />
+                      <p className="text-zinc-700 dark:text-zinc-400 text-sm">
+                        validated senior-level algorithms to ensure technical
+                        reliability and performance across sensitive industry
+                        use cases.
+                      </p>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+
+              {/* Job 4 */}
+              <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-start">
+                <div className="md:col-span-3 text-zinc-500 dark:text-zinc-600 text-xs mt-1">
+                  aug 2022 - present
+                </div>
+                <div className="md:col-span-9">
+                  <div className="border border-zinc-200 dark:border-zinc-800 p-4 inline-block mb-6 hover:border-primary transition-colors">
+                    <span className="text-zinc-900 dark:text-zinc-100">
+                      Multiple Teaching Gigs
+                    </span>
+                    <span className="text-zinc-400 dark:text-zinc-600 ml-2">
+                      //data science instructor
+                    </span>
+                  </div>
+                  <ul className="space-y-4">
+                    <li className="flex items-start gap-4">
+                      <span className="w-1.5 h-1.5 rounded-full bg-zinc-400 dark:bg-zinc-600 mt-2 shrink-0" />
+                      <p className="text-zinc-700 dark:text-zinc-400 text-sm">
+                        deliver technical instruction across diverse audiences,
+                        designing comprehensive curricula in data science,
+                        analytics, and Python programming for both academic and
+                        professional learners
+                      </p>
+                    </li>
+                    <li className="flex items-start gap-4">
+                      <span className="w-1.5 h-1.5 rounded-full bg-zinc-400 dark:bg-zinc-600 mt-2 shrink-0" />
+                      <p className="text-zinc-700 dark:text-zinc-400 text-sm">
+                        by facilitating hands-on, project-based environments and
+                        providing personalized mentorship, i effectively guide
+                        students through complex concepts while ensuring
+                        measurable progress and high-performance outcomes.
+                      </p>
                     </li>
                   </ul>
                 </div>
@@ -170,22 +295,38 @@ const HeroSection = ({ children }: HeroSectionProps) => {
 
             {/* Technologies */}
             <section>
-              <h2 className="text-xs text-gray-500 dark:text-gray-500 mb-8 font-medium uppercase tracking-widest">//technologies</h2>
+              <h2 className="text-xs text-gray-500 dark:text-gray-500 mb-8 font-medium uppercase tracking-widest">
+                //technologies
+              </h2>
               <div className="flex flex-wrap gap-x-12 gap-y-6">
                 <div>
-                  <p className="text-[10px] text-zinc-500 mb-2 uppercase tracking-widest">AI/ML</p>
-                  <p className="text-sm">Python, TensorFlow, PyTorch, Scikit-learn</p>
+                  <p className="text-[10px] text-zinc-500 mb-2 uppercase tracking-widest">
+                    AI/ML
+                  </p>
+                  <p className="text-sm">
+                    Python, TensorFlow, PyTorch, Scikit-learn
+                  </p>
                 </div>
                 <div>
-                  <p className="text-[10px] text-zinc-500 mb-2 uppercase tracking-widest">Frontend</p>
-                  <p className="text-sm">React, Next.js, TypeScript, TailwindCSS</p>
+                  <p className="text-[10px] text-zinc-500 mb-2 uppercase tracking-widest">
+                    Frontend
+                  </p>
+                  <p className="text-sm">
+                    React, Next.js, TypeScript, TailwindCSS
+                  </p>
                 </div>
                 <div>
-                  <p className="text-[10px] text-zinc-500 mb-2 uppercase tracking-widest">Backend</p>
-                  <p className="text-sm">Node.js, Django, FastAPI, PostgreSQL</p>
+                  <p className="text-[10px] text-zinc-500 mb-2 uppercase tracking-widest">
+                    Backend
+                  </p>
+                  <p className="text-sm">
+                    Node.js, Django, FastAPI, PostgreSQL
+                  </p>
                 </div>
                 <div>
-                  <p className="text-[10px] text-zinc-500 mb-2 uppercase tracking-widest">Cloud</p>
+                  <p className="text-[10px] text-zinc-500 mb-2 uppercase tracking-widest">
+                    Cloud
+                  </p>
                   <p className="text-sm">AWS, Docker, GCP, Azure</p>
                 </div>
               </div>

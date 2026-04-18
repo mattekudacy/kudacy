@@ -3,39 +3,35 @@
 import React, { useEffect, useState } from 'react';
 import { FaArrowRight } from 'react-icons/fa';
 import Link from 'next/link';
-import { BlogPost } from '@/lib/sanity';
+import { Post } from '@/lib/posts';
 
 const BlogSection = () => {
-  const [posts, setPosts] = useState<BlogPost[]>([]);
+  const [posts, setPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    async function fetchPosts() {
-      try {
-        const response = await fetch('/api/blog');
-        const data = await response.json();
-        setPosts(data.slice(0, 3));
-      } catch (error) {
-        console.error('Error fetching posts:', error);
-      } finally {
-        setLoading(false);
-      }
-    }
-    fetchPosts();
+    fetch('/api/blog')
+      .then((r) => r.json())
+      .then((data) => setPosts(data.slice(0, 3)))
+      .catch(console.error)
+      .finally(() => setLoading(false));
   }, []);
 
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric'
-    }).toLowerCase();
-  };
+  const formatDate = (dateString: string) =>
+    dateString
+      ? new Date(dateString).toLocaleDateString('en-US', {
+          year: 'numeric',
+          month: 'short',
+          day: 'numeric',
+        }).toLowerCase()
+      : '';
 
   if (loading) {
     return (
       <section className="max-w-4xl">
-        <h2 className="text-xs text-gray-500 dark:text-gray-500 mb-8 font-medium uppercase tracking-widest">//blog</h2>
+        <h2 className="text-xs text-gray-500 dark:text-gray-500 mb-8 font-medium uppercase tracking-widest">
+          //blog
+        </h2>
         <div className="space-y-4">
           {[1, 2, 3].map((i) => (
             <div key={i} className="animate-pulse">
@@ -50,7 +46,9 @@ const BlogSection = () => {
 
   return (
     <section className="max-w-4xl">
-      <h2 className="text-xs text-gray-500 dark:text-gray-500 mb-2 font-medium uppercase tracking-widest">//blog</h2>
+      <h2 className="text-xs text-gray-500 dark:text-gray-500 mb-2 font-medium uppercase tracking-widest">
+        //blog
+      </h2>
       <p className="text-zinc-500 dark:text-zinc-600 text-sm mb-8">
         sharing insights from talks, projects, and learnings in AI/ML.
       </p>
@@ -58,20 +56,16 @@ const BlogSection = () => {
       {posts.length > 0 ? (
         <div className="space-y-6">
           {posts.map((post) => (
-            <Link
-              key={post._id}
-              href={`/blog/${post.slug.current}`}
-              className="group block"
-            >
+            <Link key={post.slug} href={`/blog/${post.slug}`} className="group block">
               <div className="flex items-start justify-between gap-4">
                 <div className="min-w-0 flex-1">
-                  <span className="text-zinc-500 dark:text-zinc-600 text-xs">{formatDate(post.publishedAt)}</span>
+                  <span className="text-zinc-500 dark:text-zinc-600 text-xs">
+                    {formatDate(post.publishedAt)}
+                  </span>
                   <h3 className="text-zinc-900 dark:text-zinc-100 group-hover:text-primary transition-colors mt-1 text-sm">
                     {post.title}
                   </h3>
-                  <p className="text-zinc-600 dark:text-zinc-500 text-sm mt-1">
-                    {post.excerpt}
-                  </p>
+                  <p className="text-zinc-600 dark:text-zinc-500 text-sm mt-1">{post.excerpt}</p>
                 </div>
                 <FaArrowRight className="text-zinc-400 dark:text-zinc-600 group-hover:text-primary group-hover:translate-x-1 transition-all flex-shrink-0 mt-2 text-xs" />
               </div>
@@ -79,18 +73,13 @@ const BlogSection = () => {
           ))}
 
           <div className="pt-4">
-            <Link
-              href="/blog"
-              className="text-zinc-500 hover:text-primary transition-colors text-sm"
-            >
+            <Link href="/blog" className="text-zinc-500 hover:text-primary transition-colors text-sm">
               view all posts →
             </Link>
           </div>
         </div>
       ) : (
-        <p className="text-zinc-500 dark:text-zinc-600 text-sm">
-          no posts found. check back soon!
-        </p>
+        <p className="text-zinc-500 dark:text-zinc-600 text-sm">no posts yet. check back soon!</p>
       )}
     </section>
   );
