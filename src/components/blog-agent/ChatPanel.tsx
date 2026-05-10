@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useRef, KeyboardEvent, useMemo, FormEvent } from 'react'
+import { useState, useEffect, useRef, KeyboardEvent, useMemo, FormEvent, useCallback } from 'react'
 import { useChat } from '@ai-sdk/react'
 import { TextStreamChatTransport, UIMessage, isTextUIPart } from 'ai'
 
@@ -26,12 +26,9 @@ export default function ChatPanel({ password, onNewAssistantMessage, onReset, po
     () =>
       new TextStreamChatTransport({
         api: '/api/chat',
-        headers: {
-          'x-secret': password,
-          ...(postContext ? { 'x-post-context': encodeURIComponent(postContext) } : {}),
-        },
+        headers: { 'x-secret': password },
       }),
-    [password, postContext],
+    [password],
   )
 
   const { messages, status, sendMessage, setMessages } = useChat({
@@ -43,6 +40,23 @@ export default function ChatPanel({ password, onNewAssistantMessage, onReset, po
 
   const isLoading = status === 'submitted' || status === 'streaming'
 
+  // Seed post as hidden context in message history (filtered from UI rendering)
+  useEffect(() => {
+    if (!postContext) return
+    setMessages([
+      {
+        id: 'ctx-user',
+        role: 'user',
+        parts: [{ type: 'text', text: `Here is the blog post I want to work on:\n\n${postContext}\n\nWait for my instructions before doing anything.` }],
+      },
+      {
+        id: 'ctx-assistant',
+        role: 'assistant',
+        parts: [{ type: 'text', text: `Understood. Ready when you are.` }],
+      },
+    ])
+  }, [postContext, setMessages])
+
   useEffect(() => {
     const last = [...messages].reverse().find(m => m.role === 'assistant')
     if (last) onNewAssistantMessage(getTextContent(last))
@@ -52,12 +66,12 @@ export default function ChatPanel({ password, onNewAssistantMessage, onReset, po
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [messages, isLoading])
 
-  function submit() {
+  const submit = useCallback(() => {
     if (!isLoading && inputValue.trim()) {
       sendMessage({ text: inputValue })
       setInputValue('')
     }
-  }
+  }, [isLoading, inputValue, sendMessage])
 
   function handleKeyDown(e: KeyboardEvent<HTMLTextAreaElement>) {
     if (e.key === 'Enter' && !e.shiftKey) {
@@ -96,12 +110,12 @@ export default function ChatPanel({ password, onNewAssistantMessage, onReset, po
 
       {/* Messages */}
       <div className="flex-1 overflow-y-auto px-4 py-4 space-y-4">
-        {messages.length === 0 && (
+        {messages.filter(m => !m.id.startsWith('ctx-')).length === 0 && (
           <p className="text-zinc-600 text-xs text-center mt-8">
-            Start by describing the blog post you want to write.
+            {postContext ? 'Post loaded. Tell me what you want to change or improve.' : 'Start by describing the blog post you want to write.'}
           </p>
         )}
-        {messages.map(m => {
+        {messages.filter(m => !m.id.startsWith('ctx-')).map(m => {
           const text = getTextContent(m)
           return (
             <div

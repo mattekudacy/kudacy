@@ -43,9 +43,6 @@ export async function POST(req: Request) {
     return new Response('Unauthorized', { status: 401 })
   }
 
-  const postContextEncoded = req.headers.get('x-post-context')
-  const postContext = postContextEncoded ? decodeURIComponent(postContextEncoded) : null
-
   const { messages }: { messages: UIMessage[] } = await req.json()
 
   const openaiMessages = messages
@@ -55,18 +52,10 @@ export async function POST(req: Request) {
       content: m.parts.filter(isTextUIPart).map(p => p.text).join(''),
     }))
 
-  const systemMessages: { role: 'system'; content: string }[] = [
-    { role: 'system', content: SYSTEM_PROMPT },
-    ...(postContext ? [{
-      role: 'system' as const,
-      content: `The user has loaded the following blog post. Use it as context when helping them improve, rewrite, or build on it. When producing an updated version, always output the full markdown inside a \`\`\`md fence.\n\n${postContext}`,
-    }] : []),
-  ]
-
   const stream = await client.chat.completions.create({
     model: 'openai/gpt-4o',
     stream: true,
-    messages: [...systemMessages, ...openaiMessages],
+    messages: [{ role: 'system', content: SYSTEM_PROMPT }, ...openaiMessages],
   })
 
   const textStream = new ReadableStream<string>({
