@@ -3,6 +3,11 @@
 import { useState, useMemo, useEffect } from 'react'
 import ReactMarkdown from 'react-markdown'
 
+interface PostMeta {
+  slug: string
+  title: string
+}
+
 interface Props {
   content: string
   password: string
@@ -39,6 +44,64 @@ export default function PreviewPanel({ content, password }: Props) {
   const [publishState, setPublishState] = useState<'idle' | 'loading' | 'success' | 'error'>('idle')
   const [publishResult, setPublishResult] = useState('')
   const [copied, setCopied] = useState(false)
+  const [posts, setPosts] = useState<PostMeta[]>([])
+  const [loadingPost, setLoadingPost] = useState(false)
+  const [activeSlug, setActiveSlug] = useState('')
+  const [deleteState, setDeleteState] = useState<'idle' | 'loading'>('idle')
+
+  // Load post list on mount
+  useEffect(() => {
+    fetch('/api/blog')
+      .then(r => r.json())
+      .then((data: PostMeta[]) => setPosts(data))
+      .catch(() => {})
+  }, [])
+
+  async function handleSelectPost(slug: string) {
+    if (!slug) {
+      setActiveSlug('')
+      setDraft('')
+      return
+    }
+    setLoadingPost(true)
+    try {
+      const res = await fetch(`/api/blog?slug=${slug}`)
+      const data = await res.json()
+      if (data.raw) {
+        setDraft(data.raw)
+        setActiveSlug(slug)
+        setMode('edit')
+      }
+    } catch {}
+    setLoadingPost(false)
+  }
+
+  async function handleDelete() {
+    if (!activeSlug) return
+    if (!confirm(`Delete "${activeSlug}"? This cannot be undone.`)) return
+    setDeleteState('loading')
+    try {
+      const res = await fetch('/api/publish', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json', 'x-secret': password },
+        body: JSON.stringify({ slug: activeSlug }),
+      })
+      if (res.ok) {
+        setDraft('')
+        setActiveSlug('')
+        setPosts(posts.filter(p => p.slug !== activeSlug))
+        setPublishState('success')
+        setPublishResult(`Deleted: ${activeSlug}`)
+      } else {
+        setPublishState('error')
+        setPublishResult('Delete failed')
+      }
+    } catch {
+      setPublishState('error')
+      setPublishResult('Network error')
+    }
+    setDeleteState('idle')
+  }
 
   // Sync draft when AI produces new content
   useEffect(() => {
@@ -62,7 +125,7 @@ export default function PreviewPanel({ content, password }: Props) {
       const data = await res.json()
       if (res.ok && data.success) {
         setPublishState('success')
-        setPublishResult(`Published: src/content/blog/${slug}.md`)
+        setPublishResult(`Published: src/data/posts/${slug}.md`)
       } else {
         setPublishState('error')
         setPublishResult(data.error ?? 'Publish failed')
@@ -83,6 +146,21 @@ export default function PreviewPanel({ content, password }: Props) {
     <div className="flex flex-col h-full font-mono">
       {/* Header */}
       <div className="flex items-center justify-between px-4 py-3 border-b border-zinc-800 shrink-0 gap-2 flex-wrap">
+        {/* Post picker + mode tabs */}
+        <div className="flex items-center gap-2">
+          <select
+            onChange={e => handleSelectPost(e.target.value)}
+            defaultValue=""
+            disabled={loadingPost}
+            className="bg-zinc-900 border border-zinc-700 text-zinc-300 text-xs px-2 py-1 focus:outline-none focus:border-primary disabled:opacity-40 max-w-[160px]"
+          >
+            <option value="">load existing…</option>
+            {posts.map(p => (
+              <option key={p.slug} value={p.slug}>{p.title}</option>
+            ))}
+          </select>
+        </div>
+
         {/* Mode tabs */}
         <div className="flex items-center gap-1">
           <button
@@ -124,6 +202,15 @@ export default function PreviewPanel({ content, password }: Props) {
           >
             {publishState === 'loading' ? 'Publishing...' : 'Publish'}
           </button>
+          {activeSlug && (
+            <button
+              onClick={handleDelete}
+              disabled={deleteState === 'loading'}
+              className="text-red-400 text-xs border border-red-900 px-2 py-1 hover:border-red-500 hover:text-red-300 transition-colors disabled:opacity-40"
+            >
+              {deleteState === 'loading' ? 'Deleting...' : 'Delete'}
+            </button>
+          )}
         </div>
       </div>
 

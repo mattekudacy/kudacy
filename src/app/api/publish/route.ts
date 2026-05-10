@@ -17,7 +17,7 @@ export async function POST(req: Request) {
     return Response.json({ error: 'content and slug are required' }, { status: 400 })
   }
 
-  const path = `src/content/blog/${slug}.md`
+  const path = `src/data/posts/${slug}.md`
 
   let sha: string | undefined
   try {
@@ -41,4 +41,39 @@ export async function POST(req: Request) {
 
   const url = `https://github.com/${OWNER}/${REPO}/blob/${BRANCH}/${path}`
   return Response.json({ success: true, url })
+}
+
+export async function DELETE(req: Request) {
+  const secret = req.headers.get('x-secret')
+  if (!secret || secret !== process.env.AGENT_PASSWORD) {
+    return new Response('Unauthorized', { status: 401 })
+  }
+
+  const { slug } = await req.json()
+  if (!slug) {
+    return Response.json({ error: 'slug is required' }, { status: 400 })
+  }
+
+  const path = `src/data/posts/${slug}.md`
+
+  let sha: string | undefined
+  try {
+    const { data } = await octokit.repos.getContent({ owner: OWNER, repo: REPO, path, ref: BRANCH })
+    if (!Array.isArray(data) && data.type === 'file') {
+      sha = data.sha
+    }
+  } catch {
+    return Response.json({ error: 'Post not found' }, { status: 404 })
+  }
+
+  await octokit.repos.deleteFile({
+    owner: OWNER,
+    repo: REPO,
+    path,
+    message: `blog: delete ${slug}`,
+    sha: sha!,
+    branch: BRANCH,
+  })
+
+  return Response.json({ success: true })
 }
