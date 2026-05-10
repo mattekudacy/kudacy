@@ -55,35 +55,35 @@ const HeroSection = ({ children }: HeroSectionProps) => {
 
       <div className="max-w-6xl mx-auto border-x terminal-border min-h-screen">
         {/* Header */}
-        <header className="grid grid-cols-1 md:grid-cols-4 border-b terminal-border">
-          <div className="p-6 border-b md:border-b-0 md:border-r terminal-border">
+        <header className="grid grid-cols-2 md:grid-cols-4 border-b terminal-border">
+          <div className="p-4 md:p-6 border-b border-r terminal-border md:border-b-0">
             <p className="text-[10px] text-gray-500 dark:text-gray-500 mb-1">
               //portfolio
             </p>
             <a
-              className="text-sm hover:text-primary transition-colors"
+              className="text-xs md:text-sm hover:text-primary transition-colors"
               href="#"
             >
               mattekudacy.is-a.dev
             </a>
           </div>
-          <div className="p-6 border-b md:border-b-0 md:border-r terminal-border">
+          <div className="p-4 md:p-6 border-b terminal-border md:border-b-0 md:border-r">
             <p className="text-[10px] text-gray-500 dark:text-gray-500 mb-1">
               //contact
             </p>
             <a
-              className="text-sm hover:text-primary transition-colors"
+              className="text-xs md:text-sm hover:text-primary transition-colors"
               href="mailto:cyrus2952@gmail.com"
             >
               cyrus2952@gmail.com
             </a>
           </div>
-          <div className="p-6 border-b md:border-b-0 md:border-r terminal-border">
+          <div className="p-4 md:p-6 border-r terminal-border md:border-r">
             <p className="text-[10px] text-gray-500 dark:text-gray-500 mb-1">
               //github
             </p>
             <a
-              className="text-sm hover:text-primary transition-colors break-all"
+              className="text-xs md:text-sm hover:text-primary transition-colors break-all"
               href="https://github.com/mattekudacy"
               target="_blank"
               rel="noopener noreferrer"
@@ -91,13 +91,13 @@ const HeroSection = ({ children }: HeroSectionProps) => {
               github.com/mattekudacy
             </a>
           </div>
-          <div className="p-6">
+          <div className="p-4 md:p-6">
             <p className="text-[10px] text-gray-500 dark:text-gray-500 mb-1">
               //location
             </p>
-            <p className="text-sm flex justify-between items-center">
+            <p className="text-xs md:text-sm flex justify-between items-center">
               <span>Philippines</span>
-              <span className="text-[10px] opacity-50 uppercase">{time}</span>
+              <span className="text-[10px] opacity-50 uppercase hidden sm:inline">{time}</span>
             </p>
           </div>
         </header>
@@ -136,10 +136,15 @@ const HeroSection = ({ children }: HeroSectionProps) => {
               </h2>
               <div className="space-y-4 text-zinc-700 dark:text-zinc-400 leading-relaxed max-w-2xl">
                 <p>
-                  hi, i&apos;m Cyrus, my friends call me cy. i enjoy building AI
-                  systems from start to finish, focused on developing intuitive
-                  experiences and evaluation metrics that constantly grow and
-                  improve based on your satisfaction.
+                  hi, i&apos;m Cyrus — cy for short. i build AI systems end-to-end:
+                  from messy data and model experiments all the way to deployed
+                  tools that people actually use. i&apos;ve shipped LLM-powered apps,
+                  computer vision pipelines, and internal dev tools across consulting,
+                  publishing, and education.
+                </p>
+                <p>
+                  outside of work, i speak at conferences, mentor students,
+                  and try to make AI less intimidating for people just getting started.
                 </p>
               </div>
             </section>
@@ -168,17 +173,17 @@ const HeroSection = ({ children }: HeroSectionProps) => {
                     <li className="flex items-start gap-4">
                       <span className="w-1.5 h-1.5 rounded-full bg-zinc-400 dark:bg-zinc-600 mt-2 shrink-0" />
                       <p className="text-zinc-700 dark:text-zinc-400 text-sm">
-                        architects and deploys scalable, secure Generative AI
-                        solutions using agentic design and prompt engineering.
-                        within a cross-functional coe.
+                        build and ship generative AI proof-of-concepts that solve
+                        real business problems — covering agentic workflows, prompt
+                        engineering, and cloud deployment within a cross-functional CoE.
                       </p>
                     </li>
                     <li className="flex items-start gap-4">
                       <span className="w-1.5 h-1.5 rounded-full bg-zinc-400 dark:bg-zinc-600 mt-2 shrink-0" />
                       <p className="text-zinc-700 dark:text-zinc-400 text-sm">
-                        drive engineering productivity via ai automation,
-                        streamlining workflows to accelerate the delivery of
-                        high-performance business solutions.
+                        write clean, tested Python, conduct code reviews, and
+                        integrate no-code tools — keeping delivery fast without
+                        cutting corners on reliability or security.
                       </p>
                     </li>
                   </ul>
@@ -203,17 +208,17 @@ const HeroSection = ({ children }: HeroSectionProps) => {
                     <li className="flex items-start gap-4">
                       <span className="w-1.5 h-1.5 rounded-full bg-zinc-400 dark:bg-zinc-600 mt-2 shrink-0" />
                       <p className="text-zinc-700 dark:text-zinc-400 text-sm">
-                        apply ai models to streamline internal workflows and
-                        develop web applications that integrate llms into the
-                        engineering process.
+                        built internal LLM-powered web apps that let developers
+                        and managers interact with AI tools without needing to
+                        write a single prompt themselves.
                       </p>
                     </li>
                     <li className="flex items-start gap-4">
                       <span className="w-1.5 h-1.5 rounded-full bg-zinc-400 dark:bg-zinc-600 mt-2 shrink-0" />
                       <p className="text-zinc-700 dark:text-zinc-400 text-sm">
-                        collaborating with onshore teams, i lead the proposal,
-                        documentation, and deployment of these tools to ensure
-                        scalable, production-aligned ai adoption.
+                        proposed, documented, and deployed AI tools in
+                        collaboration with onshore teams — from idea to
+                        production with actual adoption.
                       </p>
                     </li>
                   </ul>
@@ -238,17 +243,19 @@ const HeroSection = ({ children }: HeroSectionProps) => {
                     <li className="flex items-start gap-4">
                       <span className="w-1.5 h-1.5 rounded-full bg-zinc-400 dark:bg-zinc-600 mt-2 shrink-0" />
                       <p className="text-zinc-700 dark:text-zinc-400 text-sm">
-                        collaborated with a team of engineers to develop and
-                        deploy production-grade machine learning models,
-                        specializing in high-accuracy computer vision.
+                        built a receipt scanner app in Python + React Native,
+                        revamped a car plate detection model improving efficiency
+                        by ~40%, and taught an AI workshop as the first AI intern
+                        at Cryptex.
                       </p>
                     </li>
                     <li className="flex items-start gap-4">
                       <span className="w-1.5 h-1.5 rounded-full bg-zinc-400 dark:bg-zinc-600 mt-2 shrink-0" />
                       <p className="text-zinc-700 dark:text-zinc-400 text-sm">
-                        validated senior-level algorithms to ensure technical
-                        reliability and performance across sensitive industry
-                        use cases.
+                        also did early ML work at Dashlabs and AIA — cleaning
+                        healthcare data, building a heart disease prediction model
+                        from ECG data, and developing a next-best-offer model
+                        that improved conversions by ~20%.
                       </p>
                     </li>
                   </ul>
@@ -273,19 +280,19 @@ const HeroSection = ({ children }: HeroSectionProps) => {
                     <li className="flex items-start gap-4">
                       <span className="w-1.5 h-1.5 rounded-full bg-zinc-400 dark:bg-zinc-600 mt-2 shrink-0" />
                       <p className="text-zinc-700 dark:text-zinc-400 text-sm">
-                        deliver technical instruction across diverse audiences,
-                        designing comprehensive curricula in data science,
-                        analytics, and Python programming for both academic and
-                        professional learners
+                        teach data science, ML, and Python to students and
+                        working professionals at CIIT, Eskwelabs, and
+                        ExcelHelpline — from fundamentals all the way through
+                        model deployment.
                       </p>
                     </li>
                     <li className="flex items-start gap-4">
                       <span className="w-1.5 h-1.5 rounded-full bg-zinc-400 dark:bg-zinc-600 mt-2 shrink-0" />
                       <p className="text-zinc-700 dark:text-zinc-400 text-sm">
-                        by facilitating hands-on, project-based environments and
-                        providing personalized mentorship, i effectively guide
-                        students through complex concepts while ensuring
-                        measurable progress and high-performance outcomes.
+                        maintained a 4.5/5 student satisfaction rating and
+                        consistently built hands-on curricula — because good
+                        AI education should look like real work, not just
+                        slides.
                       </p>
                     </li>
                   </ul>
