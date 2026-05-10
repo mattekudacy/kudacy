@@ -31,7 +31,7 @@ export function getAllPosts(): Post[] {
       return {
         slug,
         title: data.title ?? slug,
-        excerpt: data.excerpt ?? '',
+        excerpt: data.excerpt ?? data.description ?? '',
         publishedAt: data.date ?? '',
         tags: data.tags ?? [],
       };
@@ -51,7 +51,7 @@ export async function getPostBySlug(slug: string): Promise<Post | null> {
   return {
     slug,
     title: data.title ?? slug,
-    excerpt: data.excerpt ?? '',
+    excerpt: data.excerpt ?? data.description ?? '',
     publishedAt: data.date ?? '',
     tags: data.tags ?? [],
     contentHtml: processed.toString(),
