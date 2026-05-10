@@ -8,6 +8,7 @@ interface Props {
   password: string
   onNewAssistantMessage: (content: string) => void
   onReset: () => void
+  postContext?: string
 }
 
 function getTextContent(msg: UIMessage): string {
@@ -17,7 +18,7 @@ function getTextContent(msg: UIMessage): string {
     .join('')
 }
 
-export default function ChatPanel({ password, onNewAssistantMessage, onReset }: Props) {
+export default function ChatPanel({ password, onNewAssistantMessage, onReset, postContext }: Props) {
   const [inputValue, setInputValue] = useState('')
   const bottomRef = useRef<HTMLDivElement>(null)
 
@@ -25,9 +26,12 @@ export default function ChatPanel({ password, onNewAssistantMessage, onReset }: 
     () =>
       new TextStreamChatTransport({
         api: '/api/chat',
-        headers: { 'x-secret': password },
+        headers: {
+          'x-secret': password,
+          ...(postContext ? { 'x-post-context': encodeURIComponent(postContext) } : {}),
+        },
       }),
-    [password],
+    [password, postContext],
   )
 
   const { messages, status, sendMessage, setMessages } = useChat({
@@ -76,7 +80,12 @@ export default function ChatPanel({ password, onNewAssistantMessage, onReset }: 
     <div className="flex flex-col h-full font-mono">
       {/* Header */}
       <div className="flex items-center justify-between px-4 py-3 border-b border-zinc-800 shrink-0">
-        <span className="text-primary text-xs font-bold">// chat</span>
+        <div className="flex items-center gap-2">
+          <span className="text-primary text-xs font-bold">// chat</span>
+          {postContext && (
+            <span className="text-zinc-500 text-xs border border-zinc-700 px-2 py-0.5">post loaded</span>
+          )}
+        </div>
         <button
           onClick={handleReset}
           className="text-zinc-500 text-xs hover:text-zinc-300 transition-colors"

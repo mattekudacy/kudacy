@@ -11,6 +11,7 @@ const PreviewPanel = dynamic(() => import('@/components/blog-agent/PreviewPanel'
 export default function BlogAgentPage() {
   const [password, setPassword] = useState<string | null>(null)
   const [latestDraft, setLatestDraft] = useState('')
+  const [loadedPost, setLoadedPost] = useState('')
   const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
@@ -29,6 +30,11 @@ export default function BlogAgentPage() {
 
   const handleReset = useCallback(() => {
     setLatestDraft('')
+    setLoadedPost('')
+  }, [])
+
+  const handlePostLoaded = useCallback((raw: string) => {
+    setLoadedPost(raw)
   }, [])
 
   if (!mounted) return null
@@ -54,12 +60,13 @@ export default function BlogAgentPage() {
             password={password}
             onNewAssistantMessage={handleNewMessage}
             onReset={handleReset}
+            postContext={loadedPost}
           />
         </div>
 
         {/* Right: Preview */}
         <div className="w-1/2 overflow-hidden">
-          <PreviewPanel content={latestDraft} password={password} />
+          <PreviewPanel content={latestDraft} password={password} onPostLoaded={handlePostLoaded} />
         </div>
       </div>
     </div>

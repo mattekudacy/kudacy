@@ -11,6 +11,7 @@ interface PostMeta {
 interface Props {
   content: string
   password: string
+  onPostLoaded?: (raw: string) => void
 }
 
 function extractMarkdown(raw: string): string {
@@ -38,7 +39,7 @@ function extractSlug(markdown: string): string {
 
 type Mode = 'edit' | 'preview'
 
-export default function PreviewPanel({ content, password }: Props) {
+export default function PreviewPanel({ content, password, onPostLoaded }: Props) {
   const [draft, setDraft] = useState('')
   const [mode, setMode] = useState<Mode>('preview')
   const [publishState, setPublishState] = useState<'idle' | 'loading' | 'success' | 'error'>('idle')
@@ -71,6 +72,7 @@ export default function PreviewPanel({ content, password }: Props) {
         setDraft(data.raw)
         setActiveSlug(slug)
         setMode('edit')
+        onPostLoaded?.(data.raw)
       }
     } catch {}
     setLoadingPost(false)
@@ -103,10 +105,14 @@ export default function PreviewPanel({ content, password }: Props) {
     setDeleteState('idle')
   }
 
-  // Sync draft when AI produces new content
+  // Only sync draft from AI when the response contains an explicit markdown fence
   useEffect(() => {
-    const extracted = extractMarkdown(content)
-    if (extracted) setDraft(extracted)
+    if (!content) return
+    const hasFence = /```md[\s\S]*?```/.test(content) || /```(?:\w+)?[\s\S]*?```/.test(content)
+    if (hasFence) {
+      const extracted = extractMarkdown(content)
+      if (extracted) setDraft(extracted)
+    }
   }, [content])
 
   const slug = useMemo(() => extractSlug(draft), [draft])
