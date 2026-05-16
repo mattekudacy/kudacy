@@ -124,6 +124,14 @@ const HeroSection = ({ children }: HeroSectionProps) => {
               <p className="text-zinc-500 dark:text-zinc-500 text-lg md:text-xl font-light">
                 //ai engineer &amp; data scientist
               </p>
+              <a
+                href="https://docs.google.com/document/d/1DhbWY81LX608xCGZq3zYWxomhyi0VqsXO1zBR0d8UHQ/edit?usp=sharing"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-block mt-4 border border-zinc-200 dark:border-zinc-800 hover:border-primary px-4 py-2 text-xs text-zinc-500 dark:text-zinc-400 hover:text-primary transition-colors"
+              >
+                [view_resume]
+              </a>
             </div>
           </section>
 
