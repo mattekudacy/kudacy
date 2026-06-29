@@ -6,12 +6,16 @@ const SITE_URL = 'https://mattekudacy.is-a.dev';
 export default function sitemap(): MetadataRoute.Sitemap {
   const posts = getAllPosts();
 
-  const postEntries: MetadataRoute.Sitemap = posts.map((post) => ({
-    url: `${SITE_URL}/blog/${post.slug}`,
-    lastModified: post.publishedAt ? new Date(post.publishedAt) : new Date(),
-    changeFrequency: 'monthly',
-    priority: 0.7,
-  }));
+  const postEntries: MetadataRoute.Sitemap = posts.map((post) => {
+    const date = post.publishedAt ? new Date(post.publishedAt) : null;
+    const lastModified = date && !isNaN(date.getTime()) ? date : new Date();
+    return {
+      url: `${SITE_URL}/blog/${post.slug}`,
+      lastModified,
+      changeFrequency: 'monthly',
+      priority: 0.7,
+    };
+  });
 
   return [
     {
