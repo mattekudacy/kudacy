@@ -50,6 +50,7 @@ export default function PreviewPanel({ content, password, onPostLoaded }: Props)
   const [loadingPost, setLoadingPost] = useState(false)
   const [activeSlug, setActiveSlug] = useState('')
   const [deleteState, setDeleteState] = useState<'idle' | 'loading'>('idle')
+  const [uploading, setUploading] = useState(false)
 
   // Load post list on mount
   useEffect(() => {
@@ -141,6 +142,42 @@ export default function PreviewPanel({ content, password, onPostLoaded }: Props)
       setPublishState('error')
       setPublishResult('Network error')
     }
+  }
+
+  async function uploadImage(file: File, cursorPos: number) {
+    if (!file.type.startsWith('image/')) return
+    setUploading(true)
+    const form = new FormData()
+    form.append('file', file)
+    try {
+      const res = await fetch('/api/upload', {
+        method: 'POST',
+        headers: { 'x-secret': password },
+        body: form,
+      })
+      const data = await res.json()
+      if (res.ok && data.url) {
+        const tag = `<img src="${data.url}" width="600" alt="${file.name.replace(/\.[^.]+$/, '')}" style="display:block; margin:0 auto;" />`
+        setDraft(prev => prev.slice(0, cursorPos) + tag + prev.slice(cursorPos))
+      }
+    } catch {}
+    setUploading(false)
+  }
+
+  function handleDrop(e: React.DragEvent<HTMLTextAreaElement>) {
+    e.preventDefault()
+    const file = e.dataTransfer.files[0]
+    if (!file) return
+    const pos = (e.target as HTMLTextAreaElement).selectionStart ?? draft.length
+    uploadImage(file, pos)
+  }
+
+  function handlePaste(e: React.ClipboardEvent<HTMLTextAreaElement>) {
+    const file = Array.from(e.clipboardData.files).find(f => f.type.startsWith('image/'))
+    if (!file) return
+    e.preventDefault()
+    const pos = (e.target as HTMLTextAreaElement).selectionStart ?? draft.length
+    uploadImage(file, pos)
   }
 
   async function handleCopy() {
@@ -239,13 +276,23 @@ export default function PreviewPanel({ content, password, onPostLoaded }: Props)
 
       {/* Edit pane */}
       {mode === 'edit' && (
-        <textarea
-          value={draft}
-          onChange={e => setDraft(e.target.value)}
-          spellCheck={false}
-          placeholder="The markdown draft will appear here once the assistant writes one. You can also type directly."
-          className="flex-1 bg-zinc-950 text-zinc-200 text-sm px-6 py-4 resize-none focus:outline-none font-mono leading-relaxed placeholder:text-zinc-700"
-        />
+        <div className="relative flex-1 flex flex-col">
+          {uploading && (
+            <div className="absolute inset-0 bg-zinc-950/80 flex items-center justify-center z-10 text-xs text-primary">
+              uploading image...
+            </div>
+          )}
+          <textarea
+            value={draft}
+            onChange={e => setDraft(e.target.value)}
+            onDrop={handleDrop}
+            onDragOver={e => e.preventDefault()}
+            onPaste={handlePaste}
+            spellCheck={false}
+            placeholder="The markdown draft will appear here once the assistant writes one. You can also type directly. Drop or paste images to upload."
+            className="flex-1 bg-zinc-950 text-zinc-200 text-sm px-6 py-4 resize-none focus:outline-none font-mono leading-relaxed placeholder:text-zinc-700"
+          />
+        </div>
       )}
 
       {/* Preview pane */}
