@@ -33,6 +33,9 @@ export const metadata: Metadata = {
   alternates: {
     canonical: SITE_URL,
   },
+  verification: {
+    google: "vNsSYP91tgKTP4BamgyPUliCJN-OLIqtOVFJUuuquAM",
+  },
 };
 
 const personSchema = {
