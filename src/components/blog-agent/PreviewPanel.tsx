@@ -2,6 +2,7 @@
 
 import { useState, useMemo, useEffect } from 'react'
 import ReactMarkdown from 'react-markdown'
+import rehypeRaw from 'rehype-raw'
 
 interface PostMeta {
   slug: string
@@ -256,7 +257,7 @@ export default function PreviewPanel({ content, password, onPostLoaded }: Props)
             </p>
           ) : (
             <div className="prose prose-invert prose-sm max-w-none prose-headings:font-mono prose-headings:text-white prose-p:text-zinc-300 prose-code:text-primary prose-code:bg-zinc-900 prose-pre:bg-zinc-900 prose-pre:border prose-pre:border-zinc-800 prose-a:text-primary prose-strong:text-white prose-li:text-zinc-300">
-              <ReactMarkdown>{draft}</ReactMarkdown>
+              <ReactMarkdown rehypePlugins={[rehypeRaw]}>{draft}</ReactMarkdown>
             </div>
           )}
         </div>
