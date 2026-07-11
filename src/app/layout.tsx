@@ -50,6 +50,17 @@ const personSchema = {
   ],
 };
 
+const websiteSchema = {
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  name: "Cyrus Mante",
+  url: SITE_URL,
+  publisher: {
+    "@type": "Person",
+    name: "Cyrus Mante",
+  },
+};
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -63,6 +74,10 @@ export default function RootLayout({
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(personSchema) }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteSchema) }}
         />
         {children}
       </body>
