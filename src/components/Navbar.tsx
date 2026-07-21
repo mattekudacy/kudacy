@@ -13,7 +13,7 @@ const Navbar = () => {
         </Link>
         <div className="flex flex-col">
           <span className="text-gray-500">//contact</span>
-          <span className="text-gray-300 truncate max-w-[120px] sm:max-w-none">cyrus2952@gmail.com</span>
+          <span className="text-gray-300 truncate max-w-[120px] sm:max-w-none">hello.cyrusm@gmail.com</span>
         </div>
         <div className="flex flex-col hidden sm:flex">
           <span className="text-gray-500">//github</span>
