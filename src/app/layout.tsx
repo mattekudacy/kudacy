@@ -1,11 +1,17 @@
 import type { Metadata } from "next";
-import { JetBrains_Mono } from "next/font/google";
+import { JetBrains_Mono, Outfit } from "next/font/google";
 import "./globals.css";
 
 const jetbrainsMono = JetBrains_Mono({
   variable: "--font-jetbrains-mono",
   subsets: ["latin"],
   weight: ["300", "400", "500", "700"],
+});
+
+const outfit = Outfit({
+  variable: "--font-outfit",
+  subsets: ["latin"],
+  weight: ["300", "400", "500", "600"],
 });
 
 const SITE_URL = "https://mattekudacy.is-a.dev";
@@ -69,7 +75,7 @@ export default function RootLayout({
   return (
     <html className="dark" lang="en">
       <body
-        className={`${jetbrainsMono.variable} font-mono bg-background-light dark:bg-background-dark text-gray-800 dark:text-gray-300 min-h-screen antialiased selection:bg-primary/30`}
+        className={`${jetbrainsMono.variable} ${outfit.variable} font-sans bg-background-light dark:bg-background-dark text-gray-800 dark:text-gray-300 min-h-screen antialiased selection:bg-primary/30`}
       >
         <script
           type="application/ld+json"

@@ -9,13 +9,14 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        primary: "#4ade80",
+        primary: "#34d399",
         "background-light": "#f4f4f5",
         "background-dark": "#0a0a0a",
       },
       fontFamily: {
-        display: ["JetBrains Mono", "monospace"],
-        mono: ["JetBrains Mono", "monospace"],
+        sans: ["var(--font-outfit)", "Helvetica Neue", "sans-serif"],
+        display: ["var(--font-jetbrains-mono)", "monospace"],
+        mono: ["var(--font-jetbrains-mono)", "monospace"],
       },
       borderRadius: {
         DEFAULT: "0px",
