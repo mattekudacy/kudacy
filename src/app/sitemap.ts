@@ -17,6 +17,13 @@ export default function sitemap(): MetadataRoute.Sitemap {
     };
   });
 
+  // Reflect the most recent post date instead of "now" so the listing
+  // page's lastmod only changes when its actual content (the post list) does.
+  const latestPostDate = postEntries.reduce<Date>((latest, entry) => {
+    const modified = entry.lastModified as Date;
+    return modified > latest ? modified : latest;
+  }, new Date(0));
+
   return [
     {
       url: SITE_URL,
@@ -26,7 +33,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     },
     {
       url: `${SITE_URL}/blog`,
-      lastModified: new Date(),
+      lastModified: latestPostDate > new Date(0) ? latestPostDate : new Date(),
       changeFrequency: 'weekly',
       priority: 0.8,
     },

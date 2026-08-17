@@ -334,7 +334,7 @@ const HeroSection = ({ children }: HeroSectionProps) => {
               variants={staggerContainer}
             >
               <SectionHeading>//technologies</SectionHeading>
-              <motion.div variants={staggerItem} className="flex flex-wrap gap-x-12 gap-y-6">
+              <motion.div variants={staggerItem} className="grid grid-cols-2 md:grid-cols-3 gap-x-12 gap-y-6">
                 <div>
                   <p className="font-mono font-medium text-[10px] text-zinc-500 mb-2 uppercase tracking-widest">AI/ML</p>
                   <p className="text-sm font-light">Python, TensorFlow, PyTorch, Scikit-learn</p>
@@ -350,6 +350,14 @@ const HeroSection = ({ children }: HeroSectionProps) => {
                 <div>
                   <p className="font-mono font-medium text-[10px] text-zinc-500 mb-2 uppercase tracking-widest">Cloud</p>
                   <p className="text-sm font-light">AWS, Docker, GCP, Azure</p>
+                </div>
+                <div>
+                  <p className="font-mono font-medium text-[10px] text-zinc-500 mb-2 uppercase tracking-widest">Coding Assistants</p>
+                  <p className="text-sm font-light">Claude Code, Codex, Ollama</p>
+                </div>
+                <div>
+                  <p className="font-mono font-medium text-[10px] text-zinc-500 mb-2 uppercase tracking-widest">AI Agent Stack</p>
+                  <p className="text-sm font-light">LangChain, LangGraph, Langfuse</p>
                 </div>
               </motion.div>
             </motion.section>

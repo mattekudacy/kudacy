@@ -39,17 +39,17 @@ const ProjectsSection = () => {
     },
     {
       id: 4,
-      title: "Extractify",
-      description: "OCR application that extracts business details from receipt images using LLMs.",
-      tech: ["Python", "OpenCV", "Flet"],
-      githubUrl: "https://github.com/mattekudacy/extractify",
+      title: "Triage",
+      description: "Framework-agnostic Python library that classifies why AI agents fail and routes each failure type to an intelligent recovery strategy — retry, replan, rollback, or escalate.",
+      tech: ["Python", "LangGraph", "LLMs"],
+      githubUrl: "https://github.com/mattekudacy/triage",
     },
     {
       id: 5,
-      title: "YouTube Sentiment Analysis",
-      description: "NLP analysis of YouTube Rewind 2018 comments using sentiment analysis techniques.",
-      tech: ["Python", "NLTK", "Transformers"],
-      githubUrl: "https://github.com/mattekudacy/sentiment-analysis-nltk",
+      title: "ChageeGPT",
+      description: "Agentic chatbot for CHAGEE Philippines that handles customer queries and orders through a conversational interface.",
+      tech: ["Python", "LLMs", "Docker"],
+      githubUrl: "https://github.com/mattekudacy/chageept",
     },
   ];
 
