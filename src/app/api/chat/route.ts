@@ -1,10 +1,21 @@
-import OpenAI from 'openai'
-import { createTextStreamResponse, UIMessage, isTextUIPart } from 'ai'
+import { createOpenAI } from '@ai-sdk/openai'
+import { streamText, UIMessage, isTextUIPart } from 'ai'
 
-const client = new OpenAI({
-  baseURL: 'https://models.github.ai/inference',
-  apiKey: process.env.GITHUB_TOKEN,
+// Ollama exposes an OpenAI-compatible endpoint, so we can reuse @ai-sdk/openai
+// as the client and just point it at Ollama instead of OpenAI.
+//
+// - Self-hosted Ollama: OLLAMA_BASE_URL=http://<your-host>:11434/v1 (OLLAMA_API_KEY optional,
+//   only needed if you've put the server behind auth)
+// - Ollama's hosted cloud models: OLLAMA_BASE_URL=https://ollama.com/v1, OLLAMA_API_KEY=<your key>
+//
+// Set OLLAMA_BASE_URL / OLLAMA_API_KEY / OLLAMA_MODEL as env vars in Vercel (Project Settings ->
+// Environment Variables) — nothing else in this file needs to change per-environment.
+const ollama = createOpenAI({
+  baseURL: process.env.OLLAMA_BASE_URL ?? 'https://ollama.com/v1',
+  apiKey: process.env.OLLAMA_API_KEY,
 })
+
+const OLLAMA_MODEL = process.env.OLLAMA_MODEL ?? 'gpt-oss:120b'
 
 const SYSTEM_PROMPT = `You are a blog writing assistant for a personal developer portfolio. Your job is to help the user think through and craft a great blog post — but you never start writing until they are ready.
 
@@ -45,28 +56,18 @@ export async function POST(req: Request) {
 
   const { messages }: { messages: UIMessage[] } = await req.json()
 
-  const openaiMessages = messages
+  const modelMessages = messages
     .filter(m => m.role === 'user' || m.role === 'assistant')
     .map(m => ({
       role: m.role as 'user' | 'assistant',
       content: m.parts.filter(isTextUIPart).map(p => p.text).join(''),
     }))
 
-  const stream = await client.chat.completions.create({
-    model: 'openai/gpt-4o',
-    stream: true,
-    messages: [{ role: 'system', content: SYSTEM_PROMPT }, ...openaiMessages],
+  const result = streamText({
+    model: ollama(OLLAMA_MODEL),
+    system: SYSTEM_PROMPT,
+    messages: modelMessages,
   })
 
-  const textStream = new ReadableStream<string>({
-    async start(controller) {
-      for await (const chunk of stream) {
-        const delta = chunk.choices[0]?.delta?.content
-        if (delta) controller.enqueue(delta)
-      }
-      controller.close()
-    },
-  })
-
-  return createTextStreamResponse({ textStream })
+  return result.toTextStreamResponse()
 }
