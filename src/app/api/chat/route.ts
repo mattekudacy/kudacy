@@ -11,12 +11,20 @@ import { agentTools } from '@/lib/agent-tools'
 //
 // Set OLLAMA_BASE_URL / OLLAMA_API_KEY / OLLAMA_MODEL as env vars in Vercel (Project Settings ->
 // Environment Variables) — nothing else in this file needs to change per-environment.
-const ollama = createOpenAI({
+const ollamaProvider = createOpenAI({
   baseURL: process.env.OLLAMA_BASE_URL ?? 'https://ollama.com/v1',
   apiKey: process.env.OLLAMA_API_KEY,
 })
 
 const OLLAMA_MODEL = process.env.OLLAMA_MODEL ?? 'gpt-oss:120b'
+
+// Calling ollamaProvider(...) directly targets OpenAI's newer Responses API (item-based
+// conversation state — "item_reference" etc.), which Ollama's OpenAI-compatible endpoint
+// does not implement; it only speaks the classic Chat Completions API. .chat(...) forces
+// that. Using the wrong one works fine on the first turn (nothing to reference yet) and
+// breaks as soon as there's prior tool-call history to carry forward — surfacing as
+// "unknown input item type: item_reference" starting on the 2nd message.
+const ollama = ollamaProvider.chat(OLLAMA_MODEL)
 
 const SYSTEM_PROMPT = `You are a blog writing assistant for a personal developer portfolio. Your job is to help the user think through and craft a great blog post — but you never start writing until they are ready.
 
@@ -121,7 +129,7 @@ export async function POST(req: Request) {
     }))
 
   const result = streamText({
-    model: ollama(OLLAMA_MODEL),
+    model: ollama,
     system: SYSTEM_PROMPT,
     messages: modelMessages,
     tools: agentTools,
