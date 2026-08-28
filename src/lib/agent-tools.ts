@@ -120,4 +120,32 @@ export const readGithubFile = tool({
   },
 })
 
-export const agentTools = { searchWeb, searchGithubCode, readGithubFile }
+// The blog draft itself is delivered as a schema-validated tool call rather than as
+// fenced text in the reply. Free-text delimiters (```md fences, however many
+// backticks) are ambiguous the moment the post contains its own code block — tagged,
+// untagged, doesn't matter, there's always some post that breaks the convention. A
+// tool call's input is parsed and validated by the SDK against this schema, so there
+// is no delimiter to collide with. The client reads the draft straight out of this
+// tool call's input (see ChatPanel's findLatestDraft) instead of scanning chat text.
+export const saveDraft = tool({
+  description:
+    'Save/update the blog post draft. Call this with the COMPLETE markdown (including YAML frontmatter: title, date, description, tags, slug) once the user has approved writing it, and again any time you revise it — always pass the full draft, not a diff. This is the only way to produce a draft; never write it as plain chat text.',
+  inputSchema: z.object({
+    markdown: z
+      .string()
+      .describe(
+        'The complete Markdown draft, starting with the YAML frontmatter block (--- ... ---) followed by the post body.',
+      ),
+  }),
+  execute: async ({ markdown }) => {
+    // No side effects here — publishing to the repo is a separate, explicit action
+    // the user takes from the preview panel. This just acknowledges receipt.
+    return { saved: true, length: markdown.length }
+  },
+})
+
+export const agentTools = { searchWeb, searchGithubCode, readGithubFile, saveDraft }
+
+// Tools that cost external calls / research budget — see MAX_TOOL_STEPS in route.ts.
+// saveDraft is deliberately excluded so it's never disabled once research is capped.
+export const RESEARCH_TOOL_NAMES = ['searchWeb', 'searchGithubCode', 'readGithubFile'] as const

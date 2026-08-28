@@ -24,8 +24,8 @@ export default function BlogAgentPage() {
     setPassword(pw)
   }, [])
 
-  const handleNewMessage = useCallback((content: string) => {
-    setLatestDraft(content)
+  const handleDraftSaved = useCallback((markdown: string) => {
+    setLatestDraft(markdown)
   }, [])
 
   const handleReset = useCallback(() => {
@@ -58,7 +58,7 @@ export default function BlogAgentPage() {
         <div className="w-1/2 border-r border-zinc-800 overflow-hidden">
           <ChatPanel
             password={password}
-            onNewAssistantMessage={handleNewMessage}
+            onDraftSaved={handleDraftSaved}
             onReset={handleReset}
             postContext={loadedPost}
           />

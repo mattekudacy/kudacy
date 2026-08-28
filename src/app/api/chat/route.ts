@@ -1,6 +1,6 @@
 import { createOpenAI } from '@ai-sdk/openai'
-import { createTextStreamResponse, streamText, stepCountIs, UIMessage, isTextUIPart } from 'ai'
-import { agentTools } from '@/lib/agent-tools'
+import { convertToModelMessages, createUIMessageStream, createUIMessageStreamResponse, streamText, stepCountIs, UIMessage } from 'ai'
+import { agentTools, RESEARCH_TOOL_NAMES } from '@/lib/agent-tools'
 
 // Ollama exposes an OpenAI-compatible endpoint, so we can reuse @ai-sdk/openai
 // as the client and just point it at Ollama instead of OpenAI.
@@ -40,54 +40,23 @@ const SYSTEM_PROMPT = `You are a blog writing assistant for a personal developer
 
 3. **Summarise and ask permission.** Once you have enough to write a solid post, summarise your understanding in a few bullet points and ask: "Ready for me to write a draft based on this?" Do not start writing until the user confirms.
 
-4. **Write the full draft.** Only after the user says yes (or words to that effect), produce the complete markdown draft inside a **4-backtick** code fence like this:
+4. **Save the full draft.** Only after the user says yes (or words to that effect), call the \`saveDraft\` tool with the complete markdown — YAML frontmatter (title, date, description, tags, slug) followed by the post body. Do not paste the draft into your chat reply; \`saveDraft\` is how the draft reaches the preview panel. After calling it, send a short chat reply telling the user it's ready (e.g. "Draft saved — take a look in the preview panel").
 
-\`\`\`\`md
----
-title: ""
-date: "YYYY-MM-DD"
-description: ""
-tags: []
-slug: ""
----
-
-Post content here...
-\`\`\`\`
-
-Use exactly 4 backticks (\`\`\`\`md ... \`\`\`\`) for this outer fence, not 3 — the post itself may include its own 3-backtick code examples (e.g. a snippet from the user's repo), and a 4-backtick outer wrapper is the only way to avoid one of those getting mistaken for the end of the draft.
-
-5. **Refine on request.** If the user asks for changes, apply them and always output the full updated draft inside the same \`\`\`\`md fence so the preview stays current.
+5. **Refine on request.** If the user asks for changes, apply them and call \`saveDraft\` again with the complete updated markdown (not a diff) so the preview stays current.
 
 ## Tools
 
-You have three tools: \`searchWeb\` (Tavily), \`searchGithubCode\`, and \`readGithubFile\` (both default to the user's own portfolio repo). Use them to ground the post in real sources — pull a real example from the user's repo, or check a current fact/reference online — instead of guessing. Rules:
-- Only call a tool when it would materially improve the post. Don't search or read files on every turn just because you can.
+You have four tools: \`searchWeb\` (Tavily), \`searchGithubCode\`, \`readGithubFile\` (all three default to the user's own portfolio repo), and \`saveDraft\`. Rules:
+- Use the research tools to ground the post in real sources — pull a real example from the user's repo, or check a current fact/reference online — instead of guessing. Only call one when it would materially improve the post; don't search or read files on every turn just because you can.
 - Prefer the repo tools when the user references "my repo", "my project", or "how I built X" — search for the relevant code first, then read the specific file.
-- Finish all research *before* you start writing the draft, not partway through it — do any searching/reading first, then write the whole draft in one go. You only get a few tool calls per turn; once they're used up you can't call a tool again until the next message.
-- After using a tool, briefly tell the user what you looked at and why (e.g. "I checked your \`route.ts\` — here's what it does") so tool use stays visible in the conversation, since it doesn't render in the UI on its own.
-- If a tool returns an error (e.g. search isn't configured yet), say so plainly and keep going without it — never block the conversation on a missing tool.
+- Finish all research *before* calling saveDraft, not partway through writing it — do any searching/reading first, then write and save the whole draft in one go. You only get a few research tool calls per turn; once they're used up you can't call one again until the next message (saveDraft itself has no such limit).
+- After using a research tool, briefly tell the user what you looked at and why (e.g. "I checked your \`route.ts\` — here's what it does") so tool use stays visible in the conversation, since it doesn't render in the UI on its own.
+- If a research tool returns an error (e.g. search isn't configured yet), say so plainly and keep going without it — never block the conversation on a missing tool.
 
 ## Rules
-- Never write a draft without explicit user approval.
+- Never call saveDraft without explicit user approval first.
 - Never ask more than 4 questions at once.
 - Keep your messages concise — you are a collaborator, not a lecturer.`
-
-// Short, human-readable status line shown in the chat while a tool call is in flight —
-// this is the only signal the user gets that the agent is "doing something" beyond
-// waiting on the model, since tool calls otherwise don't render as their own UI.
-function describeToolCall(toolName: string, input: unknown): string {
-  const args = (input ?? {}) as Record<string, unknown>
-  switch (toolName) {
-    case 'searchWeb':
-      return `searching the web for "${args.query ?? ''}"`
-    case 'searchGithubCode':
-      return `searching ${args.owner ?? 'mattekudacy'}/${args.repo ?? 'kudacy'} for "${args.query ?? ''}"`
-    case 'readGithubFile':
-      return `reading ${args.owner ?? 'mattekudacy'}/${args.repo ?? 'kudacy'}/${args.path ?? ''}`
-    default:
-      return `calling ${toolName}`
-  }
-}
 
 function errorMessage(err: unknown): string {
   if (err instanceof Error) return err.message
@@ -97,6 +66,23 @@ function errorMessage(err: unknown): string {
   } catch {
     return String(err)
   }
+}
+
+// A one-off assistant text reply with no model call — used for the misconfiguration
+// fast-fail below, built from the same primitives the real response streams with so
+// it renders identically in the chat.
+function textOnlyResponse(text: string) {
+  return createUIMessageStreamResponse({
+    stream: createUIMessageStream({
+      execute({ writer }) {
+        writer.write({ type: 'start' })
+        writer.write({ type: 'text-start', id: 'cfg' })
+        writer.write({ type: 'text-delta', id: 'cfg', delta: text })
+        writer.write({ type: 'text-end', id: 'cfg' })
+        writer.write({ type: 'finish' })
+      },
+    }),
+  })
 }
 
 export async function POST(req: Request) {
@@ -116,24 +102,19 @@ export async function POST(req: Request) {
   // provider returning a cryptic 401 several seconds into "thinking...".
   const baseURL = process.env.OLLAMA_BASE_URL ?? 'https://ollama.com/v1'
   if (baseURL.includes('ollama.com') && !process.env.OLLAMA_API_KEY) {
-    return createTextStreamResponse({
-      textStream: new ReadableStream({
-        start(controller) {
-          controller.enqueue(
-            "⚠️ Agent error: OLLAMA_API_KEY is not set. It's required for https://ollama.com/v1 (Ollama's hosted cloud). Add it in Vercel → Project Settings → Environment Variables and redeploy.",
-          )
-          controller.close()
-        },
-      }),
-    })
+    return textOnlyResponse(
+      "⚠️ Agent error: OLLAMA_API_KEY is not set. It's required for https://ollama.com/v1 (Ollama's hosted cloud). Add it in Vercel → Project Settings → Environment Variables and redeploy.",
+    )
   }
 
-  const modelMessages = messages
-    .filter(m => m.role === 'user' || m.role === 'assistant')
-    .map(m => ({
-      role: m.role as 'user' | 'assistant',
-      content: m.parts.filter(isTextUIPart).map(p => p.text).join(''),
-    }))
+  // convertToModelMessages (rather than hand-picking text parts) is what keeps a
+  // previous saveDraft tool call — and therefore the current draft's full content —
+  // visible to the model on later turns. Dropping tool parts here would mean "change
+  // the title" on turn 2 has no idea what the draft from turn 1 even said.
+  const modelMessages = await convertToModelMessages(messages, {
+    tools: agentTools,
+    ignoreIncompleteToolCalls: true,
+  })
 
   const result = streamText({
     model: ollama,
@@ -144,74 +125,31 @@ export async function POST(req: Request) {
     // another (e.g. search -> read a file the search turned up) before answering.
     // Capped so a bad turn can't chain calls forever.
     stopWhen: stepCountIs(MAX_STEPS),
-    // stopWhen counts every step — tool calls AND the final text response — against
-    // the same budget. Left alone, a turn that does a few tool calls can leave too
-    // few steps for the model to actually finish writing the draft, so the reply
-    // (and the ```md fence PreviewPanel looks for) got cut off mid-way. Cap the
-    // *research* portion of the turn separately: once MAX_TOOL_STEPS steps have used
-    // a tool, force tools off for the rest of the turn so the final step is a single
-    // uninterrupted, tool-free generation with the whole remaining step budget to
-    // itself to actually finish the draft.
+    // stopWhen counts every step against one shared budget. Left alone, a turn that
+    // does a few research calls could leave too few steps for saveDraft to ever get
+    // called. Cap the *research* portion separately: once MAX_TOOL_STEPS steps have
+    // used a research tool, take those tools out of play for the rest of the turn —
+    // saveDraft stays available throughout, since it's never counted here.
     prepareStep: ({ steps }) => {
-      const toolStepsUsed = steps.filter(s => s.toolCalls.length > 0).length
-      return toolStepsUsed >= MAX_TOOL_STEPS ? { activeTools: [] } : {}
+      const researchStepsUsed = steps.filter(s =>
+        s.toolCalls.some(tc => (RESEARCH_TOOL_NAMES as readonly string[]).includes(tc.toolName)),
+      ).length
+      return researchStepsUsed >= MAX_TOOL_STEPS ? { activeTools: ['saveDraft'] } : {}
     },
     // Generous explicit cap so a full blog draft can't be silently truncated by
     // a provider's smaller default output-token limit.
     maxOutputTokens: 8192,
     onError({ error }) {
-      // Doesn't reach the client (the client-visible message is injected into the
-      // text stream below) — this is so failures are still visible in Vercel logs.
+      // Server-side log only — the client-visible error is handled by
+      // toUIMessageStreamResponse's onError below.
       console.error('[blog-agent] streamText error:', error)
     },
   })
 
-  // Build the plain-text response from the full event stream (not just
-  // result.toTextStreamResponse()) so we can interleave a short status line for
-  // each tool call and turn any failure — a tool erroring, the model provider
-  // rejecting the request, a mid-stream disconnect — into a message the user
-  // actually sees in the chat, instead of the reply just going quiet.
-  const textStream = new ReadableStream<string>({
-    async start(controller) {
-      try {
-        for await (const part of result.fullStream) {
-          switch (part.type) {
-            case 'text-delta':
-              controller.enqueue(part.text)
-              break
-            case 'tool-call':
-              controller.enqueue(`\n\n_→ ${describeToolCall(part.toolName, part.input)}…_\n\n`)
-              break
-            case 'tool-result': {
-              // Our tools return { error } instead of throwing on a handled failure
-              // (e.g. missing TAVILY_API_KEY) — surface that inline too.
-              const output = part.output as { error?: string } | undefined
-              if (output && typeof output === 'object' && output.error) {
-                controller.enqueue(`\n\n⚠️ ${part.toolName} error: ${output.error}\n\n`)
-              }
-              break
-            }
-            case 'tool-error':
-              controller.enqueue(`\n\n⚠️ ${part.toolName} failed: ${errorMessage(part.error)}\n\n`)
-              break
-            case 'error':
-              controller.enqueue(`\n\n⚠️ Agent error: ${errorMessage(part.error)}\n\n`)
-              break
-            case 'abort':
-              controller.enqueue(`\n\n⚠️ Generation was aborted${part.reason ? `: ${part.reason}` : '.'}\n\n`)
-              break
-            default:
-              break
-          }
-        }
-      } catch (err) {
-        console.error('[blog-agent] stream failed:', err)
-        controller.enqueue(`\n\n⚠️ Agent error: ${errorMessage(err)}\n\n`)
-      } finally {
-        controller.close()
-      }
+  return result.toUIMessageStreamResponse({
+    onError(error) {
+      console.error('[blog-agent] stream error:', error)
+      return `Agent error: ${errorMessage(error)}`
     },
   })
-
-  return createTextStreamResponse({ textStream })
 }
