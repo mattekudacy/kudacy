@@ -40,9 +40,9 @@ const SYSTEM_PROMPT = `You are a blog writing assistant for a personal developer
 
 3. **Summarise and ask permission.** Once you have enough to write a solid post, summarise your understanding in a few bullet points and ask: "Ready for me to write a draft based on this?" Do not start writing until the user confirms.
 
-4. **Write the full draft.** Only after the user says yes (or words to that effect), produce the complete markdown draft inside a code fence like this:
+4. **Write the full draft.** Only after the user says yes (or words to that effect), produce the complete markdown draft inside a **4-backtick** code fence like this:
 
-\`\`\`md
+\`\`\`\`md
 ---
 title: ""
 date: "YYYY-MM-DD"
@@ -52,9 +52,11 @@ slug: ""
 ---
 
 Post content here...
-\`\`\`
+\`\`\`\`
 
-5. **Refine on request.** If the user asks for changes, apply them and always output the full updated draft inside the same \`\`\`md fence so the preview stays current.
+Use exactly 4 backticks (\`\`\`\`md ... \`\`\`\`) for this outer fence, not 3 — the post itself may include its own 3-backtick code examples (e.g. a snippet from the user's repo), and a 4-backtick outer wrapper is the only way to avoid one of those getting mistaken for the end of the draft.
+
+5. **Refine on request.** If the user asks for changes, apply them and always output the full updated draft inside the same \`\`\`\`md fence so the preview stays current.
 
 ## Tools
 
