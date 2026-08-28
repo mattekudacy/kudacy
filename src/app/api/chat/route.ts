@@ -1,5 +1,6 @@
 import { createOpenAI } from '@ai-sdk/openai'
-import { streamText, UIMessage, isTextUIPart } from 'ai'
+import { streamText, stepCountIs, UIMessage, isTextUIPart } from 'ai'
+import { agentTools } from '@/lib/agent-tools'
 
 // Ollama exposes an OpenAI-compatible endpoint, so we can reuse @ai-sdk/openai
 // as the client and just point it at Ollama instead of OpenAI.
@@ -43,6 +44,14 @@ Post content here...
 
 5. **Refine on request.** If the user asks for changes, apply them and always output the full updated draft inside the same \`\`\`md fence so the preview stays current.
 
+## Tools
+
+You have three tools: \`searchWeb\` (Tavily), \`searchGithubCode\`, and \`readGithubFile\` (both default to the user's own portfolio repo). Use them to ground the post in real sources — pull a real example from the user's repo, or check a current fact/reference online — instead of guessing. Rules:
+- Only call a tool when it would materially improve the post. Don't search or read files on every turn just because you can.
+- Prefer the repo tools when the user references "my repo", "my project", or "how I built X" — search for the relevant code first, then read the specific file.
+- After using a tool, briefly tell the user what you looked at and why (e.g. "I checked your \`route.ts\` — here's what it does") so tool use stays visible in the conversation, since it doesn't render in the UI on its own.
+- If a tool returns an error (e.g. search isn't configured yet), say so plainly and keep going without it — never block the conversation on a missing tool.
+
 ## Rules
 - Never write a draft without explicit user approval.
 - Never ask more than 4 questions at once.
@@ -67,6 +76,11 @@ export async function POST(req: Request) {
     model: ollama(OLLAMA_MODEL),
     system: SYSTEM_PROMPT,
     messages: modelMessages,
+    tools: agentTools,
+    // Agentic loop: the model can call a tool, see the result, and decide to call
+    // another (e.g. search -> read a file the search turned up) before answering.
+    // Capped so a bad turn can't chain calls forever.
+    stopWhen: stepCountIs(6),
   })
 
   return result.toTextStreamResponse()
