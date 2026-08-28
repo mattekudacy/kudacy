@@ -26,6 +26,10 @@ const OLLAMA_MODEL = process.env.OLLAMA_MODEL ?? 'gpt-oss:120b'
 // "unknown input item type: item_reference" starting on the 2nd message.
 const ollama = ollamaProvider.chat(OLLAMA_MODEL)
 
+// See the prepareStep comment below for how these two work together.
+const MAX_TOOL_STEPS = 3
+const MAX_STEPS = 8
+
 const SYSTEM_PROMPT = `You are a blog writing assistant for a personal developer portfolio. Your job is to help the user think through and craft a great blog post — but you never start writing until they are ready.
 
 ## Your process
@@ -57,6 +61,7 @@ Post content here...
 You have three tools: \`searchWeb\` (Tavily), \`searchGithubCode\`, and \`readGithubFile\` (both default to the user's own portfolio repo). Use them to ground the post in real sources — pull a real example from the user's repo, or check a current fact/reference online — instead of guessing. Rules:
 - Only call a tool when it would materially improve the post. Don't search or read files on every turn just because you can.
 - Prefer the repo tools when the user references "my repo", "my project", or "how I built X" — search for the relevant code first, then read the specific file.
+- Finish all research *before* you start writing the draft, not partway through it — do any searching/reading first, then write the whole draft in one go. You only get a few tool calls per turn; once they're used up you can't call a tool again until the next message.
 - After using a tool, briefly tell the user what you looked at and why (e.g. "I checked your \`route.ts\` — here's what it does") so tool use stays visible in the conversation, since it doesn't render in the UI on its own.
 - If a tool returns an error (e.g. search isn't configured yet), say so plainly and keep going without it — never block the conversation on a missing tool.
 
@@ -136,7 +141,22 @@ export async function POST(req: Request) {
     // Agentic loop: the model can call a tool, see the result, and decide to call
     // another (e.g. search -> read a file the search turned up) before answering.
     // Capped so a bad turn can't chain calls forever.
-    stopWhen: stepCountIs(6),
+    stopWhen: stepCountIs(MAX_STEPS),
+    // stopWhen counts every step — tool calls AND the final text response — against
+    // the same budget. Left alone, a turn that does a few tool calls can leave too
+    // few steps for the model to actually finish writing the draft, so the reply
+    // (and the ```md fence PreviewPanel looks for) got cut off mid-way. Cap the
+    // *research* portion of the turn separately: once MAX_TOOL_STEPS steps have used
+    // a tool, force tools off for the rest of the turn so the final step is a single
+    // uninterrupted, tool-free generation with the whole remaining step budget to
+    // itself to actually finish the draft.
+    prepareStep: ({ steps }) => {
+      const toolStepsUsed = steps.filter(s => s.toolCalls.length > 0).length
+      return toolStepsUsed >= MAX_TOOL_STEPS ? { activeTools: [] } : {}
+    },
+    // Generous explicit cap so a full blog draft can't be silently truncated by
+    // a provider's smaller default output-token limit.
+    maxOutputTokens: 8192,
     onError({ error }) {
       // Doesn't reach the client (the client-visible message is injected into the
       // text stream below) — this is so failures are still visible in Vercel logs.

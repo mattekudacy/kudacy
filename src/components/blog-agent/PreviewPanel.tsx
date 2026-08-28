@@ -15,12 +15,33 @@ interface Props {
   onPostLoaded?: (raw: string) => void
 }
 
+// Extracts the content of the outermost fenced code block (preferring one tagged
+// ```md) from the raw chat text, tracking fence depth line by line. A naive
+// non-greedy regex match stops at the *first* ``` after the opening fence — which
+// is wrong as soon as the draft itself contains a fenced code example (e.g. the
+// agent quoting a snippet it read from the user's repo via a tool): that inner
+// fence gets mistaken for the outer closing one and the draft is cut off right
+// there. Returns null while the outer fence hasn't closed yet (still streaming).
+function extractFence(raw: string, tag?: string): string | null {
+  const lines = raw.split('\n')
+  const isOpen = tag ? (l: string) => l.trim() === '```' + tag : (l: string) => /^```\S*$/.test(l.trim())
+  const startIdx = lines.findIndex(isOpen)
+  if (startIdx === -1) return null
+
+  let insideInnerFence = false
+  for (let i = startIdx + 1; i < lines.length; i++) {
+    const trimmed = lines[i].trim()
+    if (!trimmed.startsWith('```')) continue
+    if (!insideInnerFence && trimmed === '```') {
+      return lines.slice(startIdx + 1, i).join('\n').trim()
+    }
+    insideInnerFence = !insideInnerFence
+  }
+  return null
+}
+
 function extractMarkdown(raw: string): string {
-  const mdFence = raw.match(/```md\s*([\s\S]*?)```/)
-  if (mdFence) return mdFence[1].trim()
-  const anyFence = raw.match(/```(?:\w+)?\s*([\s\S]*?)```/)
-  if (anyFence) return anyFence[1].trim()
-  return raw
+  return extractFence(raw, 'md') ?? extractFence(raw) ?? ''
 }
 
 function extractSlug(markdown: string): string {
@@ -107,14 +128,13 @@ export default function PreviewPanel({ content, password, onPostLoaded }: Props)
     setDeleteState('idle')
   }
 
-  // Only sync draft from AI when the response contains an explicit markdown fence
+  // Only sync draft from AI once its fenced block has actually closed — extractMarkdown
+  // returns '' while streaming (fence still open) or when there's no fence at all, so
+  // this naturally skips clarifying-question messages and mid-stream partial drafts.
   useEffect(() => {
     if (!content) return
-    const hasFence = /```md[\s\S]*?```/.test(content) || /```(?:\w+)?[\s\S]*?```/.test(content)
-    if (hasFence) {
-      const extracted = extractMarkdown(content)
-      if (extracted) setDraft(extracted)
-    }
+    const extracted = extractMarkdown(content)
+    if (extracted) setDraft(extracted)
   }, [content])
 
   const slug = useMemo(() => extractSlug(draft), [draft])
