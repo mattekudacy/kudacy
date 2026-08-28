@@ -20,6 +20,7 @@ function getTextContent(msg: UIMessage): string {
 
 export default function ChatPanel({ password, onNewAssistantMessage, onReset, postContext }: Props) {
   const [inputValue, setInputValue] = useState('')
+  const [errorMessage, setErrorMessage] = useState<string | null>(null)
   const bottomRef = useRef<HTMLDivElement>(null)
 
   const transport = useMemo(
@@ -34,7 +35,15 @@ export default function ChatPanel({ password, onNewAssistantMessage, onReset, po
   const { messages, status, sendMessage, setMessages } = useChat({
     transport,
     onFinish({ message }) {
+      setErrorMessage(null)
       onNewAssistantMessage(getTextContent(message))
+    },
+    onError(error) {
+      // Most failures (a 401 from a stale password, a network drop, the request
+      // never reaching the server) surface here rather than as stream content —
+      // without this the chat just sits at "thinking..." forever with no feedback.
+      console.error('[blog-agent] chat error:', error)
+      setErrorMessage(error.message || 'Something went wrong talking to the agent.')
     },
   })
 
@@ -68,6 +77,7 @@ export default function ChatPanel({ password, onNewAssistantMessage, onReset, po
 
   const submit = useCallback(() => {
     if (!isLoading && inputValue.trim()) {
+      setErrorMessage(null)
       sendMessage({ text: inputValue })
       setInputValue('')
     }
@@ -87,6 +97,7 @@ export default function ChatPanel({ password, onNewAssistantMessage, onReset, po
 
   function handleReset() {
     setMessages([])
+    setErrorMessage(null)
     onReset()
   }
 
@@ -142,6 +153,14 @@ export default function ChatPanel({ password, onNewAssistantMessage, onReset, po
             <div className="bg-zinc-900 border border-zinc-800 px-3 py-2">
               <span className="text-primary text-xs block mb-1">assistant</span>
               <span className="text-zinc-500 text-sm animate-pulse">thinking...</span>
+            </div>
+          </div>
+        )}
+        {errorMessage && (
+          <div className="flex justify-start">
+            <div className="max-w-[85%] bg-red-950/40 border border-red-900 px-3 py-2 text-sm text-red-300 whitespace-pre-wrap break-words">
+              <span className="text-red-400 text-xs font-bold block mb-1">⚠ error</span>
+              {errorMessage}
             </div>
           </div>
         )}

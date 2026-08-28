@@ -1,5 +1,5 @@
 import { createOpenAI } from '@ai-sdk/openai'
-import { streamText, stepCountIs, UIMessage, isTextUIPart } from 'ai'
+import { createTextStreamResponse, streamText, stepCountIs, UIMessage, isTextUIPart } from 'ai'
 import { agentTools } from '@/lib/agent-tools'
 
 // Ollama exposes an OpenAI-compatible endpoint, so we can reuse @ai-sdk/openai
@@ -57,13 +57,61 @@ You have three tools: \`searchWeb\` (Tavily), \`searchGithubCode\`, and \`readGi
 - Never ask more than 4 questions at once.
 - Keep your messages concise — you are a collaborator, not a lecturer.`
 
+// Short, human-readable status line shown in the chat while a tool call is in flight —
+// this is the only signal the user gets that the agent is "doing something" beyond
+// waiting on the model, since tool calls otherwise don't render as their own UI.
+function describeToolCall(toolName: string, input: unknown): string {
+  const args = (input ?? {}) as Record<string, unknown>
+  switch (toolName) {
+    case 'searchWeb':
+      return `searching the web for "${args.query ?? ''}"`
+    case 'searchGithubCode':
+      return `searching ${args.owner ?? 'mattekudacy'}/${args.repo ?? 'kudacy'} for "${args.query ?? ''}"`
+    case 'readGithubFile':
+      return `reading ${args.owner ?? 'mattekudacy'}/${args.repo ?? 'kudacy'}/${args.path ?? ''}`
+    default:
+      return `calling ${toolName}`
+  }
+}
+
+function errorMessage(err: unknown): string {
+  if (err instanceof Error) return err.message
+  if (typeof err === 'string') return err
+  try {
+    return JSON.stringify(err)
+  } catch {
+    return String(err)
+  }
+}
+
 export async function POST(req: Request) {
   const secret = req.headers.get('x-secret')
   if (!secret || secret !== process.env.AGENT_PASSWORD) {
     return new Response('Unauthorized', { status: 401 })
   }
 
-  const { messages }: { messages: UIMessage[] } = await req.json()
+  let messages: UIMessage[]
+  try {
+    ;({ messages } = await req.json())
+  } catch {
+    return new Response('Bad request: body was not valid JSON.', { status: 400 })
+  }
+
+  // Fail fast with a message the user can actually see, instead of the model
+  // provider returning a cryptic 401 several seconds into "thinking...".
+  const baseURL = process.env.OLLAMA_BASE_URL ?? 'https://ollama.com/v1'
+  if (baseURL.includes('ollama.com') && !process.env.OLLAMA_API_KEY) {
+    return createTextStreamResponse({
+      textStream: new ReadableStream({
+        start(controller) {
+          controller.enqueue(
+            "⚠️ Agent error: OLLAMA_API_KEY is not set. It's required for https://ollama.com/v1 (Ollama's hosted cloud). Add it in Vercel → Project Settings → Environment Variables and redeploy.",
+          )
+          controller.close()
+        },
+      }),
+    })
+  }
 
   const modelMessages = messages
     .filter(m => m.role === 'user' || m.role === 'assistant')
@@ -81,7 +129,59 @@ export async function POST(req: Request) {
     // another (e.g. search -> read a file the search turned up) before answering.
     // Capped so a bad turn can't chain calls forever.
     stopWhen: stepCountIs(6),
+    onError({ error }) {
+      // Doesn't reach the client (the client-visible message is injected into the
+      // text stream below) — this is so failures are still visible in Vercel logs.
+      console.error('[blog-agent] streamText error:', error)
+    },
   })
 
-  return result.toTextStreamResponse()
+  // Build the plain-text response from the full event stream (not just
+  // result.toTextStreamResponse()) so we can interleave a short status line for
+  // each tool call and turn any failure — a tool erroring, the model provider
+  // rejecting the request, a mid-stream disconnect — into a message the user
+  // actually sees in the chat, instead of the reply just going quiet.
+  const textStream = new ReadableStream<string>({
+    async start(controller) {
+      try {
+        for await (const part of result.fullStream) {
+          switch (part.type) {
+            case 'text-delta':
+              controller.enqueue(part.text)
+              break
+            case 'tool-call':
+              controller.enqueue(`\n\n_→ ${describeToolCall(part.toolName, part.input)}…_\n\n`)
+              break
+            case 'tool-result': {
+              // Our tools return { error } instead of throwing on a handled failure
+              // (e.g. missing TAVILY_API_KEY) — surface that inline too.
+              const output = part.output as { error?: string } | undefined
+              if (output && typeof output === 'object' && output.error) {
+                controller.enqueue(`\n\n⚠️ ${part.toolName} error: ${output.error}\n\n`)
+              }
+              break
+            }
+            case 'tool-error':
+              controller.enqueue(`\n\n⚠️ ${part.toolName} failed: ${errorMessage(part.error)}\n\n`)
+              break
+            case 'error':
+              controller.enqueue(`\n\n⚠️ Agent error: ${errorMessage(part.error)}\n\n`)
+              break
+            case 'abort':
+              controller.enqueue(`\n\n⚠️ Generation was aborted${part.reason ? `: ${part.reason}` : '.'}\n\n`)
+              break
+            default:
+              break
+          }
+        }
+      } catch (err) {
+        console.error('[blog-agent] stream failed:', err)
+        controller.enqueue(`\n\n⚠️ Agent error: ${errorMessage(err)}\n\n`)
+      } finally {
+        controller.close()
+      }
+    },
+  })
+
+  return createTextStreamResponse({ textStream })
 }
