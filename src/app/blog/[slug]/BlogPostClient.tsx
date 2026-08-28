@@ -26,7 +26,7 @@ export default function BlogPostClient({ post }: { post: Post }) {
           <FaArrowLeft className="text-xs" /> back to blog
         </Link>
 
-        <article className="max-w-2xl">
+        <article className="max-w-4xl mx-auto">
           <header className="mb-10">
             {post.tags && post.tags.length > 0 && (
               <div className="flex gap-2 flex-wrap mb-4">
@@ -49,7 +49,7 @@ export default function BlogPostClient({ post }: { post: Post }) {
           </header>
 
           <div
-            className="prose prose-sm dark:prose-invert max-w-none
+            className="prose prose-base md:prose-lg dark:prose-invert max-w-none
               prose-headings:font-light prose-headings:text-zinc-900 dark:prose-headings:text-white
               prose-p:text-zinc-700 dark:prose-p:text-zinc-400 prose-p:leading-relaxed
               prose-a:text-primary prose-a:no-underline hover:prose-a:underline
