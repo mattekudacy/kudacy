@@ -15,33 +15,49 @@ interface Props {
   onPostLoaded?: (raw: string) => void
 }
 
-// Extracts the content of the outermost fenced code block (preferring one tagged
-// ```md) from the raw chat text, tracking fence depth line by line. A naive
-// non-greedy regex match stops at the *first* ``` after the opening fence — which
-// is wrong as soon as the draft itself contains a fenced code example (e.g. the
-// agent quoting a snippet it read from the user's repo via a tool): that inner
-// fence gets mistaken for the outer closing one and the draft is cut off right
-// there. Returns null while the outer fence hasn't closed yet (still streaming).
+// The agent is asked (see the system prompt) to wrap the whole draft in a 4-backtick
+// fence (````md ... ````) specifically because the draft itself can contain 3-backtick
+// code examples — a 4-backtick outer delimiter can never be confused with a 3-backtick
+// inner one, so this is unambiguous. Any run of 4+ backticks (matching or exceeding the
+// opener's length) closes it. Returns null while still streaming (no closing line yet).
+function extractLongMdFence(raw: string): string | null {
+  const lines = raw.split('\n')
+  const startIdx = lines.findIndex(l => /^`{4,}md\s*$/.test(l.trim()))
+  if (startIdx === -1) return null
+
+  const fenceLen = lines[startIdx].trim().match(/^`+/)![0].length
+  const closeRe = new RegExp(`^\`{${fenceLen},}\\s*$`)
+  for (let i = startIdx + 1; i < lines.length; i++) {
+    if (closeRe.test(lines[i].trim())) {
+      return lines.slice(startIdx + 1, i).join('\n').trim()
+    }
+  }
+  return null
+}
+
+// Fallback for a plain 3-backtick ```md fence (e.g. a message sent before the agent
+// picked up the 4-backtick convention, or if it forgets). This is inherently a little
+// ambiguous — an *untagged* inner fence (a bare ``` code block, like raw CLI output)
+// looks identical to the real closing delimiter — so we take the LAST bare ``` in the
+// text as the close: a post is far more likely to end right after its true closing
+// fence than to end with a trailing untagged code block. Tagged inner fences
+// (```python etc.) are unambiguous and never match here, so they're ignored.
 function extractFence(raw: string, tag?: string): string | null {
   const lines = raw.split('\n')
   const isOpen = tag ? (l: string) => l.trim() === '```' + tag : (l: string) => /^```\S*$/.test(l.trim())
   const startIdx = lines.findIndex(isOpen)
   if (startIdx === -1) return null
 
-  let insideInnerFence = false
+  let lastCloseIdx = -1
   for (let i = startIdx + 1; i < lines.length; i++) {
-    const trimmed = lines[i].trim()
-    if (!trimmed.startsWith('```')) continue
-    if (!insideInnerFence && trimmed === '```') {
-      return lines.slice(startIdx + 1, i).join('\n').trim()
-    }
-    insideInnerFence = !insideInnerFence
+    if (lines[i].trim() === '```') lastCloseIdx = i
   }
-  return null
+  if (lastCloseIdx === -1) return null
+  return lines.slice(startIdx + 1, lastCloseIdx).join('\n').trim()
 }
 
 function extractMarkdown(raw: string): string {
-  return extractFence(raw, 'md') ?? extractFence(raw) ?? ''
+  return extractLongMdFence(raw) ?? extractFence(raw, 'md') ?? extractFence(raw) ?? ''
 }
 
 function extractSlug(markdown: string): string {
