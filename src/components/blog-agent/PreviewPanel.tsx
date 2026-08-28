@@ -10,54 +10,16 @@ interface PostMeta {
 }
 
 interface Props {
+  // The current draft's markdown, already extracted — this is the `saveDraft` tool
+  // call's `markdown` input, read directly off the structured tool-call part by
+  // ChatPanel (see findLatestDraft there). Earlier versions of this component tried
+  // to regex the draft out of the chat's raw text via a ```md fence convention, which
+  // broke every time the post itself contained a code block that collided with the
+  // delimiter (tagged, untagged, didn't matter — there was always another case).
+  // Reading it off a schema-validated tool call sidesteps that whole class of bug.
   content: string
   password: string
   onPostLoaded?: (raw: string) => void
-}
-
-// The agent is asked (see the system prompt) to wrap the whole draft in a 4-backtick
-// fence (````md ... ````) specifically because the draft itself can contain 3-backtick
-// code examples — a 4-backtick outer delimiter can never be confused with a 3-backtick
-// inner one, so this is unambiguous. Any run of 4+ backticks (matching or exceeding the
-// opener's length) closes it. Returns null while still streaming (no closing line yet).
-function extractLongMdFence(raw: string): string | null {
-  const lines = raw.split('\n')
-  const startIdx = lines.findIndex(l => /^`{4,}md\s*$/.test(l.trim()))
-  if (startIdx === -1) return null
-
-  const fenceLen = lines[startIdx].trim().match(/^`+/)![0].length
-  const closeRe = new RegExp(`^\`{${fenceLen},}\\s*$`)
-  for (let i = startIdx + 1; i < lines.length; i++) {
-    if (closeRe.test(lines[i].trim())) {
-      return lines.slice(startIdx + 1, i).join('\n').trim()
-    }
-  }
-  return null
-}
-
-// Fallback for a plain 3-backtick ```md fence (e.g. a message sent before the agent
-// picked up the 4-backtick convention, or if it forgets). This is inherently a little
-// ambiguous — an *untagged* inner fence (a bare ``` code block, like raw CLI output)
-// looks identical to the real closing delimiter — so we take the LAST bare ``` in the
-// text as the close: a post is far more likely to end right after its true closing
-// fence than to end with a trailing untagged code block. Tagged inner fences
-// (```python etc.) are unambiguous and never match here, so they're ignored.
-function extractFence(raw: string, tag?: string): string | null {
-  const lines = raw.split('\n')
-  const isOpen = tag ? (l: string) => l.trim() === '```' + tag : (l: string) => /^```\S*$/.test(l.trim())
-  const startIdx = lines.findIndex(isOpen)
-  if (startIdx === -1) return null
-
-  let lastCloseIdx = -1
-  for (let i = startIdx + 1; i < lines.length; i++) {
-    if (lines[i].trim() === '```') lastCloseIdx = i
-  }
-  if (lastCloseIdx === -1) return null
-  return lines.slice(startIdx + 1, lastCloseIdx).join('\n').trim()
-}
-
-function extractMarkdown(raw: string): string {
-  return extractLongMdFence(raw) ?? extractFence(raw, 'md') ?? extractFence(raw) ?? ''
 }
 
 function extractSlug(markdown: string): string {
@@ -144,13 +106,10 @@ export default function PreviewPanel({ content, password, onPostLoaded }: Props)
     setDeleteState('idle')
   }
 
-  // Only sync draft from AI once its fenced block has actually closed — extractMarkdown
-  // returns '' while streaming (fence still open) or when there's no fence at all, so
-  // this naturally skips clarifying-question messages and mid-stream partial drafts.
+  // content is only set once ChatPanel has seen a complete saveDraft tool call, so
+  // this can't fire on a clarifying-question message or a still-streaming draft.
   useEffect(() => {
-    if (!content) return
-    const extracted = extractMarkdown(content)
-    if (extracted) setDraft(extracted)
+    if (content) setDraft(content)
   }, [content])
 
   const slug = useMemo(() => extractSlug(draft), [draft])

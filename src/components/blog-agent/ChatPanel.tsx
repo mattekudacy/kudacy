@@ -2,30 +2,81 @@
 
 import { useState, useEffect, useRef, KeyboardEvent, useMemo, FormEvent, useCallback } from 'react'
 import { useChat } from '@ai-sdk/react'
-import { TextStreamChatTransport, UIMessage, isTextUIPart } from 'ai'
+import { DefaultChatTransport, UIMessage, isTextUIPart } from 'ai'
 
 interface Props {
   password: string
-  onNewAssistantMessage: (content: string) => void
+  onDraftSaved: (markdown: string) => void
   onReset: () => void
   postContext?: string
 }
 
-function getTextContent(msg: UIMessage): string {
-  return msg.parts
-    .filter(isTextUIPart)
-    .map(p => p.text)
-    .join('')
+type MessagePart = UIMessage['parts'][number]
+
+// Loosely typed since useChat() isn't parameterized with our server's tool types here —
+// matches the light `as`-casting style already used server-side for tool I/O.
+type AnyToolPart = MessagePart & {
+  toolName?: string
+  state?: string
+  input?: unknown
+  output?: unknown
+  errorText?: string
 }
 
-export default function ChatPanel({ password, onNewAssistantMessage, onReset, postContext }: Props) {
+function isToolPart(part: MessagePart): part is AnyToolPart {
+  return part.type === 'dynamic-tool' || part.type.startsWith('tool-')
+}
+
+function toolNameOf(part: AnyToolPart): string {
+  return part.type === 'dynamic-tool' ? part.toolName ?? 'tool' : part.type.replace(/^tool-/, '')
+}
+
+// Short, human-readable status line rendered inline while/after a tool call — the only
+// signal the user gets that the agent is doing something beyond waiting on the model,
+// since tool calls don't render as anything on their own.
+function describeTool(part: AnyToolPart): string {
+  const name = toolNameOf(part)
+  const args = (part.input ?? {}) as Record<string, unknown>
+  switch (name) {
+    case 'searchWeb':
+      return `searching the web for "${args.query ?? ''}"`
+    case 'searchGithubCode':
+      return `searching ${args.owner ?? 'mattekudacy'}/${args.repo ?? 'kudacy'} for "${args.query ?? ''}"`
+    case 'readGithubFile':
+      return `reading ${args.owner ?? 'mattekudacy'}/${args.repo ?? 'kudacy'}/${args.path ?? ''}`
+    case 'saveDraft':
+      return 'saving draft'
+    default:
+      return `calling ${name}`
+  }
+}
+
+// Finds the most recent complete saveDraft tool call across all messages and returns
+// its markdown input directly — this is the draft, already parsed and schema-validated
+// by the SDK, no text-scanning involved. 'input-streaming' is excluded since the tool's
+// JSON args may still be partial/invalid at that point.
+function findLatestDraft(messages: UIMessage[]): string | null {
+  for (let i = messages.length - 1; i >= 0; i--) {
+    const parts = messages[i].parts
+    for (let j = parts.length - 1; j >= 0; j--) {
+      const part = parts[j]
+      if (!isToolPart(part) || toolNameOf(part) !== 'saveDraft') continue
+      if (part.state !== 'input-available' && part.state !== 'output-available') continue
+      const markdown = (part.input as { markdown?: unknown } | undefined)?.markdown
+      if (typeof markdown === 'string') return markdown
+    }
+  }
+  return null
+}
+
+export default function ChatPanel({ password, onDraftSaved, onReset, postContext }: Props) {
   const [inputValue, setInputValue] = useState('')
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
   const bottomRef = useRef<HTMLDivElement>(null)
 
   const transport = useMemo(
     () =>
-      new TextStreamChatTransport({
+      new DefaultChatTransport({
         api: '/api/chat',
         headers: { 'x-secret': password },
       }),
@@ -34,9 +85,8 @@ export default function ChatPanel({ password, onNewAssistantMessage, onReset, po
 
   const { messages, status, sendMessage, setMessages } = useChat({
     transport,
-    onFinish({ message }) {
+    onFinish() {
       setErrorMessage(null)
-      onNewAssistantMessage(getTextContent(message))
     },
     onError(error) {
       // Most failures (a 401 from a stale password, a network drop, the request
@@ -67,9 +117,9 @@ export default function ChatPanel({ password, onNewAssistantMessage, onReset, po
   }, [postContext, setMessages])
 
   useEffect(() => {
-    const last = [...messages].reverse().find(m => m.role === 'assistant')
-    if (last) onNewAssistantMessage(getTextContent(last))
-  }, [messages, onNewAssistantMessage])
+    const draft = findLatestDraft(messages)
+    if (draft) onDraftSaved(draft)
+  }, [messages, onDraftSaved])
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
@@ -126,28 +176,45 @@ export default function ChatPanel({ password, onNewAssistantMessage, onReset, po
             {postContext ? 'Post loaded. Tell me what you want to change or improve.' : 'Start by describing the blog post you want to write.'}
           </p>
         )}
-        {messages.filter(m => !m.id.startsWith('ctx-')).map(m => {
-          const text = getTextContent(m)
-          return (
+        {messages.filter(m => !m.id.startsWith('ctx-')).map(m => (
+          <div key={m.id} className={`flex ${m.role === 'user' ? 'justify-end' : 'justify-start'}`}>
             <div
-              key={m.id}
-              className={`flex ${m.role === 'user' ? 'justify-end' : 'justify-start'}`}
+              className={`max-w-[85%] px-3 py-2 text-sm leading-relaxed break-words ${
+                m.role === 'user'
+                  ? 'bg-zinc-800 text-white border border-zinc-700'
+                  : 'bg-zinc-900 text-zinc-200 border border-zinc-800'
+              }`}
             >
-              <div
-                className={`max-w-[85%] px-3 py-2 text-sm leading-relaxed whitespace-pre-wrap break-words ${
-                  m.role === 'user'
-                    ? 'bg-zinc-800 text-white border border-zinc-700'
-                    : 'bg-zinc-900 text-zinc-200 border border-zinc-800'
-                }`}
-              >
-                {m.role === 'assistant' && (
-                  <span className="text-primary text-xs block mb-1">assistant</span>
-                )}
-                {text}
-              </div>
+              {m.role === 'assistant' && (
+                <span className="text-primary text-xs block mb-1">assistant</span>
+              )}
+              {m.parts.map((part, i) => {
+                if (isTextUIPart(part)) {
+                  return part.text ? (
+                    <span key={i} className="whitespace-pre-wrap">
+                      {part.text}
+                    </span>
+                  ) : null
+                }
+                if (!isToolPart(part)) return null
+
+                const output = part.output as { error?: string } | undefined
+                if (part.state === 'output-error' || output?.error) {
+                  return (
+                    <div key={i} className="text-red-400 text-xs italic my-1">
+                      ⚠ {toolNameOf(part)} error: {part.errorText ?? output?.error}
+                    </div>
+                  )
+                }
+                return (
+                  <div key={i} className="text-zinc-500 text-xs italic my-1">
+                    → {describeTool(part)}…
+                  </div>
+                )
+              })}
             </div>
-          )
-        })}
+          </div>
+        ))}
         {isLoading && (
           <div className="flex justify-start">
             <div className="bg-zinc-900 border border-zinc-800 px-3 py-2">
