@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { FaGithub } from 'react-icons/fa';
+import { FaGithub, FaArrowRight } from 'react-icons/fa';
 import { motion } from 'framer-motion';
 
 const staggerContainer = {
@@ -83,7 +83,7 @@ const ProjectsSection = () => {
               <span className="font-medium text-zinc-900 dark:text-zinc-100 group-hover:text-primary transition-colors text-sm">
                 {project.title}
               </span>
-              <p className="text-zinc-600 dark:text-zinc-500 text-sm mt-1 font-light">
+              <p className="text-zinc-600 dark:text-zinc-400 text-sm mt-1 font-light">
                 {project.description}
               </p>
               <div className="flex flex-wrap gap-3 mt-2">
@@ -97,6 +97,7 @@ const ProjectsSection = () => {
                 ))}
               </div>
             </div>
+            <FaArrowRight className="text-zinc-400 dark:text-zinc-600 group-hover:text-primary group-hover:translate-x-1 transition-all flex-shrink-0 mt-2 text-xs" />
           </motion.a>
         ))}
       </div>

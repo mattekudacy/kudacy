@@ -55,6 +55,7 @@ export default function BlogPostClient({ post }: { post: Post }) {
               prose-a:text-primary prose-a:no-underline hover:prose-a:underline
               prose-code:text-primary prose-code:bg-zinc-100 dark:prose-code:bg-zinc-900 prose-code:px-1 prose-code:rounded
               prose-pre:bg-zinc-950 prose-pre:border prose-pre:border-zinc-800
+              [&_pre_code]:bg-transparent [&_pre_code]:p-0 [&_pre_code]:text-zinc-300 [&_pre_code]:rounded-none
               prose-blockquote:border-zinc-300 dark:prose-blockquote:border-zinc-700
               prose-li:text-zinc-700 dark:prose-li:text-zinc-400"
             dangerouslySetInnerHTML={{ __html: post.contentHtml ?? '' }}

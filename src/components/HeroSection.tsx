@@ -30,6 +30,7 @@ const SectionHeading = ({ children }: { children: React.ReactNode }) => (
 const HeroSection = ({ children }: HeroSectionProps) => {
   const [time, setTime] = useState("");
   const [isDark, setIsDark] = useState(true);
+  const [showToggle, setShowToggle] = useState(true);
 
   useEffect(() => {
     const updateTime = () => {
@@ -49,6 +50,26 @@ const HeroSection = ({ children }: HeroSectionProps) => {
     return () => clearInterval(interval);
   }, []);
 
+  useEffect(() => {
+    let lastY = window.scrollY;
+    let ticking = false;
+
+    const handleScroll = () => {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(() => {
+        const y = window.scrollY;
+        const scrollingDown = y > lastY;
+        setShowToggle(y < 80 || !scrollingDown);
+        lastY = y;
+        ticking = false;
+      });
+    };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
   const toggleTheme = () => {
     document.documentElement.classList.toggle("dark");
     setIsDark(!isDark);
@@ -62,7 +83,9 @@ const HeroSection = ({ children }: HeroSectionProps) => {
       {/* Theme toggle button */}
       <button
         onClick={toggleTheme}
-        className="fixed bottom-8 right-8 z-50 p-3 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 hover:border-primary transition-colors font-mono text-xs"
+        className={`fixed bottom-8 right-8 z-50 p-3 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 hover:border-primary transition-all duration-300 font-mono text-xs ${
+          showToggle ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4 pointer-events-none"
+        }`}
       >
         [TOGGLE_THEME]
       </button>
@@ -130,7 +153,7 @@ const HeroSection = ({ children }: HeroSectionProps) => {
               <img
                 alt="Cyrus Mante"
                 className="w-32 h-32 md:w-40 md:h-40 rounded-full border-2 border-zinc-200 dark:border-zinc-800 grayscale hover:grayscale-0 transition-all duration-500 object-cover relative"
-                src="/images/me.jpg"
+                src="/images/me-cropped.jpg"
               />
             </motion.div>
             <motion.div
