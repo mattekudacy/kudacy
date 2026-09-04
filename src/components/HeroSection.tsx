@@ -340,8 +340,8 @@ const HeroSection = ({ children }: HeroSectionProps) => {
                   </div>
                   <div className="md:col-span-9">
                     <div className="border border-zinc-200 dark:border-zinc-800 p-4 inline-block mb-6 hover:border-primary transition-colors">
-                      <span className="font-medium text-zinc-900 dark:text-zinc-100">Early Roles</span>
-                      <span className="font-mono text-zinc-400 dark:text-zinc-600 ml-2">//ml &amp; data science</span>
+                      <span className="font-medium text-zinc-900 dark:text-zinc-100">Freelancing</span>
+                      <span className="font-mono text-zinc-400 dark:text-zinc-600 ml-2">//ml engineer</span>
                     </div>
                     <ul className="space-y-4">
                       <li className="flex items-start gap-4">
