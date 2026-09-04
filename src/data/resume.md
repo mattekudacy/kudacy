@@ -25,6 +25,14 @@
 - Worked closely with our onshore team to deploy these tools.  
 - Proposed new AI tools, wrote documentation, and shared knowledge with the team.  
 
+### Freelance Machine Learning Engineer / Computer Vision Developer  
+*Sept 2022 - Aug 2024*  
+- Sourced and delivered independent computer vision projects for small businesses across logistics, security, education, and finance, owning each engagement end-to-end from requirements to deployment.  
+- Built a face recognition attendance system for a logistics client using OpenCV and facial embeddings with liveness detection to prevent spoofing, backed by a SQLite database and a Streamlit dashboard for management reporting.  
+- Designed an edge-deployed license plate recognition system for automated parking billing: YOLO for detection quantized with TensorRT for ~2x faster on-device inference on an ESP32, EasyOCR for plate reading, with fee calculation handled server-side.  
+- Developed a receipt digitization app for an accounting firm client using OCR text extraction refined by Gemini to correct inconsistencies, built with Flutter for cross-platform use.  
+- Built an optical mark recognition (OMR) grading system for a school client, using webcam-based sheet ingestion, bubble-grid segmentation for answer detection, and a templated computer-vision pipeline to extract the answer key.  
+
 ### Part-Time Data Science Specialist Instructor - CIIT Colleges of Arts and Sciences  
 *Apr 2025 - Present*  
 - Teach a cohort of 20+ students on computational thinking, data wrangling, ML, and deployment.  

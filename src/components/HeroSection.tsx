@@ -285,12 +285,63 @@ const HeroSection = ({ children }: HeroSectionProps) => {
                 {/* Job 3 */}
                 <motion.div variants={staggerItem} className="grid grid-cols-1 md:grid-cols-12 gap-8 items-start mb-12">
                   <div className="md:col-span-3 font-mono text-zinc-500 dark:text-zinc-600 text-xs mt-1">
+                    sept 2022 - aug 2024
+                  </div>
+                  <div className="md:col-span-9">
+                    <div className="border border-zinc-200 dark:border-zinc-800 p-4 inline-block mb-6 hover:border-primary transition-colors">
+                      <span className="font-medium text-zinc-900 dark:text-zinc-100">Freelance</span>
+                      <span className="font-mono text-zinc-400 dark:text-zinc-600 ml-2">//ml engineer &amp; computer vision developer</span>
+                    </div>
+                    <ul className="space-y-4">
+                      <li className="flex items-start gap-4">
+                        <span className="w-1.5 h-1.5 rounded-full bg-zinc-400 dark:bg-zinc-600 mt-2 shrink-0" />
+                        <p className="text-zinc-700 dark:text-zinc-400 text-sm font-light">
+                          found my own clients and shipped computer vision projects
+                          for small businesses in logistics, security, education,
+                          and finance — owning each one end-to-end, from figuring out
+                          what they actually needed to running it in production.
+                        </p>
+                      </li>
+                      <li className="flex items-start gap-4">
+                        <span className="w-1.5 h-1.5 rounded-full bg-zinc-400 dark:bg-zinc-600 mt-2 shrink-0" />
+                        <p className="text-zinc-700 dark:text-zinc-400 text-sm font-light">
+                          built a face recognition attendance system on OpenCV and
+                          facial embeddings — with liveness detection so a photo
+                          couldn&apos;t clock you in — backed by SQLite and a Streamlit
+                          dashboard for the people who had to read the reports.
+                        </p>
+                      </li>
+                      <li className="flex items-start gap-4">
+                        <span className="w-1.5 h-1.5 rounded-full bg-zinc-400 dark:bg-zinc-600 mt-2 shrink-0" />
+                        <p className="text-zinc-700 dark:text-zinc-400 text-sm font-light">
+                          put license plate recognition on the edge for automated
+                          parking billing: YOLO for detection, quantized with TensorRT
+                          for ~2x faster inference on an ESP32, EasyOCR for reading
+                          the plate, and fees computed server-side.
+                        </p>
+                      </li>
+                      <li className="flex items-start gap-4">
+                        <span className="w-1.5 h-1.5 rounded-full bg-zinc-400 dark:bg-zinc-600 mt-2 shrink-0" />
+                        <p className="text-zinc-700 dark:text-zinc-400 text-sm font-light">
+                          digitized receipts for an accounting firm — OCR text cleaned
+                          up by Gemini, wrapped in Flutter so it ran on both platforms
+                          — and built a webcam-based OMR grader for a school that
+                          segments bubble grids and pulls the answer key from a template.
+                        </p>
+                      </li>
+                    </ul>
+                  </div>
+                </motion.div>
+
+                {/* Job 4 */}
+                <motion.div variants={staggerItem} className="grid grid-cols-1 md:grid-cols-12 gap-8 items-start mb-12">
+                  <div className="md:col-span-3 font-mono text-zinc-500 dark:text-zinc-600 text-xs mt-1">
                     dec 2021 - mar 2024
                   </div>
                   <div className="md:col-span-9">
                     <div className="border border-zinc-200 dark:border-zinc-800 p-4 inline-block mb-6 hover:border-primary transition-colors">
-                      <span className="font-medium text-zinc-900 dark:text-zinc-100">Freelancing</span>
-                      <span className="font-mono text-zinc-400 dark:text-zinc-600 ml-2">//ml engineer</span>
+                      <span className="font-medium text-zinc-900 dark:text-zinc-100">Early Roles</span>
+                      <span className="font-mono text-zinc-400 dark:text-zinc-600 ml-2">//ml &amp; data science</span>
                     </div>
                     <ul className="space-y-4">
                       <li className="flex items-start gap-4">
@@ -315,7 +366,7 @@ const HeroSection = ({ children }: HeroSectionProps) => {
                   </div>
                 </motion.div>
 
-                {/* Job 4 */}
+                {/* Job 5 */}
                 <motion.div variants={staggerItem} className="grid grid-cols-1 md:grid-cols-12 gap-8 items-start">
                   <div className="md:col-span-3 font-mono text-zinc-500 dark:text-zinc-600 text-xs mt-1">
                     aug 2022 - present
